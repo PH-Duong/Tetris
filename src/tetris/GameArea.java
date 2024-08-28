@@ -2,9 +2,9 @@ package tetris;
 
 import Effect.DropBlockEffect;
 import tetris.TetrisBlock.GachNo;
-
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import javax.swing.JPanel;
 
 //**************************************
@@ -42,7 +42,7 @@ public class GameArea extends JPanel {
         this.setBackground(jp.getBackground());
 
         //Lấy kích thước của ô vuông
-        blockCellsSize = this.getWidth() / 10;
+        blockCellsSize = this.getHeight()/ 20;
 
         //Khởi tạo các ô trong khu vực game là rỗng và ở ngoài là đã tồn tại
         this.backgroundColorMatrix = new Color[30][20];
@@ -57,6 +57,21 @@ public class GameArea extends JPanel {
         this.gameOver = false;
         this.dropBlockEffect = new DropBlockEffect(this);
         this.dropBlockEffect.start();
+    }
+    
+    //Thay đổi kích thước màn hình game khi cửa sổ chương trình thay đổi kích thước
+    public void updateAreaSize(Rectangle gameFormSize) {
+        int gameAreaHeight = (int)(gameFormSize.height*0.8);
+        
+        blockCellsSize = gameAreaHeight/20;
+        
+        gameAreaHeight = blockCellsSize*20;
+        int gameAreaWidth = blockCellsSize*10;
+        
+        int GameAreaX = gameFormSize.width/2-blockCellsSize*5;
+        int GameAreaY = (gameFormSize.height-gameAreaHeight)/2;
+        
+        this.setBounds(GameAreaX, GameAreaY, gameAreaWidth, gameAreaHeight);
     }
 
     //Tham chiếu đến lớp sinh khối

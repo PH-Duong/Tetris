@@ -10,6 +10,7 @@ import tetris.TetrisBlock.ZBlock;
 import tetris.TetrisBlock.IBlock;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
@@ -163,7 +164,20 @@ public class BlockGenerator extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
+        
         drawQueueBlocks(g);
+    }
+
+    //Cập nhật kích thước và vị trí khi cửa sổ chương trình thay đổi kích thước
+    void updateAreaSize(Rectangle gameAreaSize) {
+        
+        int blockGeneratorHeight = (int)(gameAreaSize.height*0.6);
+        int blockGeneratorWidth = (int)(gameAreaSize.width*0.4);
+        
+        int blockGeneratorX = gameAreaSize.x+gameAreaSize.width + (int)(blockGeneratorWidth*0.1);
+        int blockGeneratorY = gameAreaSize.y;
+        
+        this.setBounds(blockGeneratorX, blockGeneratorY, blockGeneratorWidth, blockGeneratorHeight);
+        
     }
 }

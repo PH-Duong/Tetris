@@ -1,8 +1,6 @@
 package Effect;
 
 import java.awt.Point;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import tetris.GameArea;
 
 //**************************************
@@ -28,21 +26,21 @@ public class DropBlockEffect extends Thread {
 
             isDrop = false;
 
-            Point f = gameArea.getLocation();
+            Point gameAreaLocation = gameArea.getLocation();
 
-            int n = 3;
-            while (n-- > 0) {
-                f.y++;
-                gameArea.setLocation(f);
+            int numPixel = 3;
+            while (numPixel-- > 0) {
+                gameAreaLocation.y++;
+                gameArea.setLocation(gameAreaLocation);
                 try {
                     Thread.sleep(20);
                 } catch (InterruptedException ex) {
                 }
             }
-            n = 3;
-            while (n-- > 0) {
-                f.y--;
-                gameArea.setLocation(f);
+            numPixel = 3;
+            while (numPixel-- > 0) {
+                gameAreaLocation.y--;
+                gameArea.setLocation(gameAreaLocation);
                 try {
                     Thread.sleep(20);
                 } catch (InterruptedException ex) {

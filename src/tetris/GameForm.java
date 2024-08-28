@@ -12,6 +12,8 @@ import javax.swing.Timer;
 
 public class GameForm extends javax.swing.JFrame implements KeyListener {
 
+    private GameForm gameForm;
+    
     private GameArea gameArea;
     
     private BlockGenerator blockGenerator;
@@ -28,7 +30,9 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
      //Phương thức khởi tạo
     public GameForm() {
         initComponents();
-
+        
+        gameForm = this;
+        
         this.getContentPane().setBackground(Color.GRAY);
 
         //Game luôn ở trên cửa sổ khác
@@ -38,27 +42,36 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         gameArea = new GameArea(GameAreaPanel);
         blockGenerator = new BlockGenerator(BlockGeneratorPanel);
         gameArea.addBlockGenerator(blockGenerator);
-
+        
         this.add(gameArea);
         this.add(blockGenerator);
-
+        
         //Khởi tạo luồng game
         startGameThread();
 
         this.canRotate = true;
         this.canDrop = true;
-
+        
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                gameArea.updateAreaSize(gameForm.getBounds());
+                blockGenerator.updateAreaSize(gameArea.getBounds());
+            }
+            
+        });
         
         //***********
         //Phần này sẽ kiểm tra luồng từ bàn phím sau mỗi (keyPressedDelay) thời gian
-        //Và được lặp lại liên tục
+        //Và được lặp lại sau mỗi (keyPressedDelay) thời gian
         //***********
         
         Timer timer = new Timer(keyPressedDelay, event -> {
-            diChuyenGach();
+            moveBlock();
         });
         timer.setRepeats(true);
         timer.start();  // Bắt đầu đếm ngược
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -71,7 +84,6 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tetris Project");
-        setResizable(false);
 
         GameAreaPanel.setBackground(new java.awt.Color(4, 5, 5));
 
@@ -120,7 +132,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
                 .addComponent(GameAreaPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(BlockGeneratorPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(132, 132, 132))
+                .addContainerGap(132, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -135,13 +147,13 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(48, 48, 48)
                         .addComponent(BlockGeneratorPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(30, 30, 30))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //Hành động sẽ được thực hiện khi ấn nút new game
+//Hành động sẽ được thực hiện khi ấn nút new game
     private void NewGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NewGameButtonActionPerformed
         gameArea.createNewGame();
         gameArea.createNewBlock();
@@ -185,7 +197,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
             }
         }
     }
-
+    
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
@@ -206,7 +218,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         }
     }
 
-    private void diChuyenGach() {
+    private void moveBlock() {
         if (canMoveLeft) {
             gameArea.moveBlockLeft();
         }

@@ -99,7 +99,10 @@ public class Block {
 
         //Tô màu ô vuông
         g.setColor(cellColor);
-        g.fillRect(x + 3, y + 3, blockCellSize - 6, blockCellSize - 6);
+        
+        //Vẽ hình vuông bé hơn bên trong
+        int innerMargin = (int)(blockCellSize*0.24);
+        g.fillRect(x + innerMargin/2, y + innerMargin/2, blockCellSize - innerMargin, blockCellSize - innerMargin);
 
     }
 
