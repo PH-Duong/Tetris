@@ -24,7 +24,6 @@ public class GameThread extends Thread {
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ex) {
-                    break;
                 }
             }
         }

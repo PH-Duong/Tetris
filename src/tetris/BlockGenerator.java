@@ -1,5 +1,7 @@
 package tetris;
 
+import java.awt.Color;
+import java.awt.Font;
 import tetris.TetrisBlock.OBlock;
 import tetris.TetrisBlock.LBlock;
 import tetris.TetrisBlock.JBlock;
@@ -26,18 +28,19 @@ public class BlockGenerator extends JPanel {
     //Để lấy khối gạch ở đầu đồng thời cho khối gạch khác vào cuối thì ta sử dụng hàng đợi
     private Queue<Block> nextBlocksQueue;
     
+    private Font font;
+    
+    private int blockCellSize;
     //Phương thức khởi tạo
-    public BlockGenerator(JPanel jp) {
-        
-        //********************************
-        //Ta sẽ lấy vị trí và kích thước của bảng tạo (BlockGeneratorPanel)
-        //Chứ không vẽ lên bảng tạo đấy
-        //********************************
-        jp.setVisible(false);
-        this.setBounds(jp.getBounds());
-        this.setBackground(jp.getBackground());
+    public BlockGenerator() {
 
+        this.setBackground(Color.BLACK);
         nextBlocksQueue = new LinkedList<>();
+        
+        font = new Font("Calibri",Font.PLAIN,16);
+        
+        blockCellSize = (int) (this.getWidth() * 0.8) / 4;
+
     }
     
     //Trả về khối đầu tiên trong hàng đợi đồng thời sinh ra khối khác để thay thế
@@ -70,13 +73,12 @@ public class BlockGenerator extends JPanel {
         //****************************
         
         int drawingAreaWidth = this.getWidth();
-        int blockCellSize = (int) (drawingAreaWidth * 0.8) / 4;
-        int drawingAreaY = blockCellSize;
+        int drawingAreaY = blockCellSize*2;
 
         for (int t = 0; t < 5; t++) {
 
             int blockMatrixSize = queueBlocks[t].getBlockMatrixSize();
-            int[][] blockShape = queueBlocks[t].getBlockShape();
+            int[][] blockShape = queueBlocks[t].getCurrentBlockShape();
             int drawingAreaX = (drawingAreaWidth - blockCellSize * blockMatrixSize) / 2;
 
             //Do khối I có kích cỡ ma trận là 4 và 2 ô trên trống nên ta lùi lại 1 ô để các ô cách nhau đúng 1 khối gạch con
@@ -164,14 +166,20 @@ public class BlockGenerator extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
+       
         drawQueueBlocks(g);
+        
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, this.getWidth(), blockCellSize);
+        g.setColor(Color.BLACK);
+        g.setFont(font);
+        g.drawString("NEXT", 10,10 );
     }
 
     //Cập nhật kích thước và vị trí khi cửa sổ chương trình thay đổi kích thước
     void updateAreaSize(Rectangle gameAreaSize) {
         
-        int blockGeneratorHeight = (int)(gameAreaSize.height*0.6);
+        int blockGeneratorHeight = (int)(gameAreaSize.height*0.68);
         int blockGeneratorWidth = (int)(gameAreaSize.width*0.4);
         
         int blockGeneratorX = gameAreaSize.x+gameAreaSize.width + (int)(blockGeneratorWidth*0.1);
@@ -179,5 +187,6 @@ public class BlockGenerator extends JPanel {
         
         this.setBounds(blockGeneratorX, blockGeneratorY, blockGeneratorWidth, blockGeneratorHeight);
         
+        blockCellSize = (int)(blockGeneratorWidth * 0.8) / 4;
     }
 }

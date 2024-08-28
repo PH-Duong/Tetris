@@ -12,6 +12,8 @@ import javax.swing.Timer;
 
 public class GameForm extends javax.swing.JFrame implements KeyListener {
 
+    private HoldingBlock storedBlock;
+    
     private GameForm gameForm;
     
     private GameArea gameArea;
@@ -25,7 +27,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     private final int keyPressedDelay = 70;
     
     //Cho phép di chuyển hoặc không
-    private boolean canMoveLeft, canMoveRight, canMoveDown, canRotate, canDrop;
+    private boolean canMoveLeft, canMoveRight, canMoveDown, canRotate, canDrop, canStore;
 
      //Phương thức khởi tạo
     public GameForm() {
@@ -39,24 +41,29 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         this.setAlwaysOnTop(true);
         addKeyListener(this);
 
-        gameArea = new GameArea(GameAreaPanel);
-        blockGenerator = new BlockGenerator(BlockGeneratorPanel);
+        gameArea = new GameArea();
+        blockGenerator = new BlockGenerator();
+        storedBlock = new HoldingBlock();
         gameArea.addBlockGenerator(blockGenerator);
+        gameArea.addStoredBlock(storedBlock);
         
         this.add(gameArea);
         this.add(blockGenerator);
+        this.add(storedBlock);
         
         //Khởi tạo luồng game
         startGameThread();
 
         this.canRotate = true;
         this.canDrop = true;
+        this.canStore = true;
         
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 gameArea.updateAreaSize(gameForm.getBounds());
                 blockGenerator.updateAreaSize(gameArea.getBounds());
+                storedBlock.updateAreaSize(gameArea.getBounds());
             }
             
         });
@@ -78,25 +85,10 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        GameAreaPanel = new javax.swing.JPanel();
         NewGameButton = new javax.swing.JButton();
-        BlockGeneratorPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tetris Project");
-
-        GameAreaPanel.setBackground(new java.awt.Color(4, 5, 5));
-
-        javax.swing.GroupLayout GameAreaPanelLayout = new javax.swing.GroupLayout(GameAreaPanel);
-        GameAreaPanel.setLayout(GameAreaPanelLayout);
-        GameAreaPanelLayout.setHorizontalGroup(
-            GameAreaPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 250, Short.MAX_VALUE)
-        );
-        GameAreaPanelLayout.setVerticalGroup(
-            GameAreaPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
-        );
 
         NewGameButton.setText("New Game");
         NewGameButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -108,19 +100,6 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
             }
         });
 
-        BlockGeneratorPanel.setBackground(new java.awt.Color(4, 5, 5));
-
-        javax.swing.GroupLayout BlockGeneratorPanelLayout = new javax.swing.GroupLayout(BlockGeneratorPanel);
-        BlockGeneratorPanel.setLayout(BlockGeneratorPanelLayout);
-        BlockGeneratorPanelLayout.setHorizontalGroup(
-            BlockGeneratorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 110, Short.MAX_VALUE)
-        );
-        BlockGeneratorPanelLayout.setVerticalGroup(
-            BlockGeneratorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 355, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -128,26 +107,14 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(52, 52, 52)
                 .addComponent(NewGameButton)
-                .addGap(113, 113, 113)
-                .addComponent(GameAreaPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(BlockGeneratorPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(132, Short.MAX_VALUE))
+                .addContainerGap(623, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(85, 85, 85)
-                        .addComponent(NewGameButton))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(GameAreaPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
-                        .addComponent(BlockGeneratorPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addGap(85, 85, 85)
+                .addComponent(NewGameButton)
+                .addContainerGap(452, Short.MAX_VALUE))
         );
 
         pack();
@@ -196,6 +163,14 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
                 gameThread.interrupt();
             }
         }
+        if (key == KeyEvent.VK_C) {
+            if (canDrop) {
+                canStore = false;
+                if (gameArea.holdOrSwapBlock()) {
+                    gameThread.interrupt();
+                }
+            }
+        }
     }
     
     @Override
@@ -215,6 +190,9 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         }
         if (key == KeyEvent.VK_SPACE) {
             canDrop = true;
+        }
+        if (key == KeyEvent.VK_C) {
+            canStore = true;
         }
     }
 
@@ -241,8 +219,6 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel BlockGeneratorPanel;
-    private javax.swing.JPanel GameAreaPanel;
     private javax.swing.JButton NewGameButton;
     // End of variables declaration//GEN-END:variables
 

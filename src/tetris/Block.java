@@ -25,6 +25,9 @@ public class Block {
     //Toạ độ x,y trên ma trận màu sắc ở dưới (cái này khác với toạ độ trên màn hình)
     private int x, y;
     
+    //Tạo độ y ban đầu khi được tạo ra (được dùng để reset khối về vị trí ban đầu)
+    private int initX,initY;
+    
     //Ma trận màu sắc để xác định các khối hiện có trong nền
     private Color[][] backgroundColorMatrix;
     
@@ -34,8 +37,8 @@ public class Block {
     public Block(int[][] blockShape, Color blockColor, int x, int y, LoaiGach loaigach) {
         this.blockShape = blockShape;
         this.blockColor = blockColor;
-        this.x = x;
-        this.y = y;
+        this.x = this.initX = x;
+        this.y = this.initY = y;
         generateAllBlockShapes();
         this.currentBlockShapeIndex = 0;
         this.loaiGach = loaigach;
@@ -207,8 +210,17 @@ public class Block {
         return true;
     }
 
-    public int[][] getBlockShape() {
+    public void resetPosition() {
+        y = initY;
+        x = initX;
+    }
+    
+    public int[][] getCurrentBlockShape() {
         return blockShape;
+    }
+    
+    public int[][] getInitialBlockShape() {
+        return blockShapesList[0];
     }
 
     public Color getBlockColor() {

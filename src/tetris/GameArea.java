@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 //**************************************
 //Đây là lớp được dùng để vẽ màn hình game cũng như di chuyển gạch
 //**************************************
-
 public class GameArea extends JPanel {
 
     //biến này sẽ được sử dụng để lưu kích thước của một ô gạch (blockcell)
@@ -18,31 +17,29 @@ public class GameArea extends JPanel {
 
     //Khối gạch đang được điều khuyển
     private Block block;
-    
+
     //Ma trận màu sắc để xác định các khối hiện có trong nền
     private Color[][] backgroundColorMatrix;
-    
+
     //lớp sinh khối
     private BlockGenerator blockGenerator;
-    
+
+    //Lớp bảng giữ khối
+    private HoldingBlock storedBlock;
+
     //lớp hiệu ứng thả khối
     private DropBlockEffect dropBlockEffect;
-    
+
     //biến kiểm tra game kết thúc chưa
     private boolean gameOver;
 
     //Phương thức khởi tạo
-    public GameArea(JPanel jp) {
+    public GameArea() {
 
-        //Do ta chỉ lấy hình dạng của panel nên ta sẽ không hiện nó lên màn hình
-        jp.setVisible(false);
-
-        //Lấy kích thước và màu sắc chuyền vào Khu vực nền
-        this.setBounds(jp.getBounds());
-        this.setBackground(jp.getBackground());
+        this.setBackground(Color.black);
 
         //Lấy kích thước của ô vuông
-        blockCellsSize = this.getHeight()/ 20;
+        blockCellsSize = this.getHeight() / 20;
 
         //Khởi tạo các ô trong khu vực game là rỗng và ở ngoài là đã tồn tại
         this.backgroundColorMatrix = new Color[30][20];
@@ -58,19 +55,19 @@ public class GameArea extends JPanel {
         this.dropBlockEffect = new DropBlockEffect(this);
         this.dropBlockEffect.start();
     }
-    
+
     //Thay đổi kích thước màn hình game khi cửa sổ chương trình thay đổi kích thước
     public void updateAreaSize(Rectangle gameFormSize) {
-        int gameAreaHeight = (int)(gameFormSize.height*0.8);
-        
-        blockCellsSize = gameAreaHeight/20;
-        
-        gameAreaHeight = blockCellsSize*20;
-        int gameAreaWidth = blockCellsSize*10;
-        
-        int GameAreaX = gameFormSize.width/2-blockCellsSize*5;
-        int GameAreaY = (gameFormSize.height-gameAreaHeight)/2;
-        
+        int gameAreaHeight = (int) (gameFormSize.height * 0.8);
+
+        blockCellsSize = gameAreaHeight / 20;
+
+        gameAreaHeight = blockCellsSize * 20;
+        int gameAreaWidth = blockCellsSize * 10;
+
+        int GameAreaX = gameFormSize.width / 2 - blockCellsSize * 5;
+        int GameAreaY = (gameFormSize.height - gameAreaHeight) / 2;
+
         this.setBounds(GameAreaX, GameAreaY, gameAreaWidth, gameAreaHeight);
     }
 
@@ -79,12 +76,41 @@ public class GameArea extends JPanel {
         this.blockGenerator = blockGenerator;
     }
 
+    //Tham chiếu đến bảng lưu khối
+    public void addStoredBlock(HoldingBlock storedBlock) {
+        this.storedBlock = storedBlock;
+    }
+
+    //Thực hiện lưu hoặc swap block
+    //Ý tưởng:*********************
+    //+Đầu tiên ta cần kiểm tra xem khối đã được swap lần nào hay chưa,
+    //nếu rồi thì trả false
+    //+Nếu chưa thì ta gọi phương thức .holdOrSwapBlock() của lớp StoredBlock,
+    //nếu trả về null tức từ trước chưa giữ viên gạch nào và mới cho vào, khi đó
+    //ta sẽ tạo viên gạch mới
+    //nếu khác null tức đã swap gạch, ta reset viên gạch mới swap đó về vị trí thả gạch
+    //*****************************
+    public boolean holdOrSwapBlock() {
+        if (storedBlock.hasSwappedHoldingBlock()) {
+            return false;
+        }
+        block = storedBlock.holdOrSwapBlock(block);
+        if (block == null) {
+            createNewBlock();
+        } else {
+            block.resetPosition();
+        }
+        return true;
+    }
+
     //Tạo khối gạch mới
     public void createNewBlock() {
         block = blockGenerator.getNextBlock();
-        
+
         //Cho block tham chiếu đến ma trận màu sắc
         block.setBackgroundColorMatrix(backgroundColorMatrix);
+
+        storedBlock.resetHasSwappedHoldingBlock();
     }
 
     //Khởi tạo game mới
@@ -116,6 +142,7 @@ public class GameArea extends JPanel {
         }
         return false;
     }
+
     //Di chuyển gạch sang phải
     public boolean moveBlockRight() {
         if (block.moveRight()) {
@@ -165,7 +192,6 @@ public class GameArea extends JPanel {
         return gameOver;
     }
 
-    
     //Đẩy các hàng ở phía trên hàng bị xoá xuống
     private void dropBlocksAboveClearedLines(int rowToRemove) {
         for (int i = rowToRemove; i > 0; i--) {
@@ -188,7 +214,7 @@ public class GameArea extends JPanel {
 
         //Lấy các tham số của khối gạch
         int blockMatrixSize = block.getBlockMatrixSize();
-        int[][] blockShape = block.getBlockShape();
+        int[][] blockShape = block.getCurrentBlockShape();
         int blockX = block.getX();
         int blockY = block.getY();
 
@@ -211,7 +237,7 @@ public class GameArea extends JPanel {
     private void drawActiveBlock(Graphics g) {
 
         int BlockMatrixSize = block.getBlockMatrixSize();
-        int[][] BlockShape = block.getBlockShape();
+        int[][] BlockShape = block.getCurrentBlockShape();
         int blockX = block.getX();
         int blockY = block.getY();
         int ghostBlockY = block.getGhostBlockY();
