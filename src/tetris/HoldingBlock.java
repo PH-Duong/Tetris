@@ -9,14 +9,20 @@ import javax.swing.JPanel;
 public class HoldingBlock extends JPanel {
 
     private int blockCellSize;
+    
     private Block block;
 
+    //Biến này sẽ lưu độ dày của viền
+    private int innerMargin;
+    
+    private int textX,textY;
+    
     private boolean hasSwappedHoldingBlock;
 
     private Font font;
 
     public HoldingBlock() {
-        this.setBackground(Color.black);
+        this.setBackground(Color.WHITE);
         this.hasSwappedHoldingBlock = false;
 
         block = null;
@@ -53,15 +59,19 @@ public class HoldingBlock extends JPanel {
     //Phương thức này sẽ vẽ khối gạch đang cầm lên màn hình
     //Ý tưởng tương tự với vẽ các khối gạch kế tiếp ở lớp BlockGenerator
     private void drawHoldingBlock(Graphics g) {
-
+        
+        int drawingAreaWidth = this.getWidth()-innerMargin*2;
+        int drawingAreaHeight = this.getHeight()-innerMargin - blockCellSize;
+        g.setColor(Color.BLACK);
+        g.fillRect(innerMargin, blockCellSize, drawingAreaWidth, drawingAreaHeight);
+        
         if (block == null) {
             return;
         }
-
-        int drawingAreaWidth = this.getWidth();
+        
         int blockMatrixSize = block.getBlockMatrixSize();
         int[][] blockShape = block.getInitialBlockShape();
-
+        
         int drawingAreaX = (drawingAreaWidth - blockCellSize * blockMatrixSize) / 2;
         int drawingAreaY = blockCellSize * 2;
 
@@ -86,17 +96,31 @@ public class HoldingBlock extends JPanel {
     }
 
     //Cập nhật kích thước và vị trí khi cửa sổ chương trình thay đổi kích thước
+    //Ý tưởng:***********************
+    //Ta sẽ các định kích thước các thành phần bằng cách lấy tỷ lệ theo khung game (GameArea)
     void updateAreaSize(Rectangle gameAreaSize) {
 
-        int blockGeneratorHeight = (int) (gameAreaSize.height * 0.19);
-        int blockGeneratorWidth = (int) (gameAreaSize.width * 0.4);
+        //Xác định dài, rộng của khung
+        int holdingBlockHeight = (int) (gameAreaSize.height * 0.19);
+        int holdingBlockWidth = (int) (gameAreaSize.width * 0.4);
 
-        int blockGeneratorX = gameAreaSize.x - blockGeneratorWidth - (int) (blockGeneratorWidth * 0.1);
-        int blockGeneratorY = gameAreaSize.y;
+        //Cập nhật độ dày của viền
+        innerMargin = (int)(gameAreaSize.width*0.01);
+        
+        //Xác định toạ độ của khung
+        int holdingBlockX = gameAreaSize.x - holdingBlockWidth-(int)(gameAreaSize.width*0.02);
+        int holdingBlockY = gameAreaSize.y;
 
-        this.setBounds(blockGeneratorX, blockGeneratorY, blockGeneratorWidth, blockGeneratorHeight);
+        //Cập nhật vị trí và kích thước của khung
+        this.setBounds(holdingBlockX, holdingBlockY, holdingBlockWidth, holdingBlockHeight);
 
-        blockCellSize = (int) (blockGeneratorWidth * 0.8) / 4;
+        //Xác định kích thước khối
+        blockCellSize = (int) (holdingBlockWidth * 0.8) / 4;
+        
+        //Xác định kích vị trí, kích thước của chữ "HOLD"
+        textX=(int) (holdingBlockWidth * 0.1);
+        textY=(int) (holdingBlockWidth * 0.15);
+        font = font.deriveFont((float)(blockCellSize));
     }
 
     //Phương thức kế thừa từ lớp Jpanel dùng để vẽ
@@ -106,10 +130,8 @@ public class HoldingBlock extends JPanel {
 
         drawHoldingBlock(g);
 
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, this.getWidth(), blockCellSize);
         g.setColor(Color.BLACK);
         g.setFont(font);
-        g.drawString("HOLD", 10, 10);
+        g.drawString("HOLD", textX, textY);
     }
 }

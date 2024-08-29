@@ -1,10 +1,13 @@
 package tetris;
 
+import Effect.ClearLinesEffect;
 import Effect.DropBlockEffect;
 import tetris.TetrisBlock.GachNo;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 //**************************************
@@ -33,6 +36,10 @@ public class GameArea extends JPanel {
     //biến kiểm tra game kết thúc chưa
     private boolean gameOver;
 
+    private int[] fullLinesList;
+
+    private ClearLinesEffect clearLinesEffect;
+
     //Phương thức khởi tạo
     public GameArea() {
 
@@ -54,6 +61,9 @@ public class GameArea extends JPanel {
         this.gameOver = false;
         this.dropBlockEffect = new DropBlockEffect(this);
         this.dropBlockEffect.start();
+        clearLinesEffect = new ClearLinesEffect(blockCellsSize);
+        fullLinesList = new int[4];
+        fullLinesList[0] = fullLinesList[1] = fullLinesList[2] = fullLinesList[3] = -1;
     }
 
     //Thay đổi kích thước màn hình game khi cửa sổ chương trình thay đổi kích thước
@@ -69,6 +79,8 @@ public class GameArea extends JPanel {
         int GameAreaY = (gameFormSize.height - gameAreaHeight) / 2;
 
         this.setBounds(GameAreaX, GameAreaY, gameAreaWidth, gameAreaHeight);
+
+        clearLinesEffect.setBlockCellsSize(blockCellsSize);
     }
 
     //Tham chiếu đến lớp sinh khối
@@ -170,9 +182,9 @@ public class GameArea extends JPanel {
         }
     }
 
-    //Kiểm tra xem có hàng nào đầy không và đẩy các khác phía trên xuống
-    public void checkAndClearFullLines() {
-        for (int i = 19; i > 0; i--) {
+    public boolean checkAndClearFullLines() {
+        int t = 0;
+        for (int i = 0; i <20; i++) {
             boolean check = true;
             for (int j = 0; j < 10; j++) {
                 if (backgroundColorMatrix[i][j] == null) {
@@ -181,11 +193,15 @@ public class GameArea extends JPanel {
                 }
             }
             if (check) {
-                dropBlocksAboveClearedLines(i);
-                i++;
+                System.out.println(t);
+                fullLinesList[t++] = i;
             }
         }
-        repaint();
+        
+        if (t==4) {
+            clearLinesEffect.setIs4Line(true);
+        }
+        return t != 0;
     }
 
     public boolean checkGameOver() {
@@ -193,15 +209,25 @@ public class GameArea extends JPanel {
     }
 
     //Đẩy các hàng ở phía trên hàng bị xoá xuống
-    private void dropBlocksAboveClearedLines(int rowToRemove) {
-        for (int i = rowToRemove; i > 0; i--) {
+    public void dropBlocksAboveClearedLines() {
+        for (int rowToRemove : fullLinesList) {
+
+            if (rowToRemove == -1) {
+                break;
+            }
+
+            for (int i = rowToRemove; i > 0; i--) {
+                for (int j = 0; j < 10; j++) {
+                    backgroundColorMatrix[i][j] = backgroundColorMatrix[i - 1][j];
+                }
+            }
             for (int j = 0; j < 10; j++) {
-                backgroundColorMatrix[i][j] = backgroundColorMatrix[i - 1][j];
+                backgroundColorMatrix[0][j] = null;
             }
         }
-        for (int j = 0; j < 10; j++) {
-            backgroundColorMatrix[0][j] = null;
-        }
+        fullLinesList[0] = fullLinesList[1] = fullLinesList[2] = fullLinesList[3] = -1;
+        repaint();
+        clearLinesEffect.setIs4Line(false);
     }
 
     //Chuyển khối gạch vào nền
@@ -262,22 +288,30 @@ public class GameArea extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        drawActiveBlock(g);
 
         for (int Y = 0; Y < 20; Y++) {
             for (int X = 0; X < 10; X++) {
+                if (Y == fullLinesList[0] || Y == fullLinesList[1] || Y == fullLinesList[2] || Y == fullLinesList[3]) {
+                    clearLinesEffect.drawFrame(g, Y);
+                } else {
+                    //Vẽ khung nền
+                    g.setColor(new Color(32, 33, 30));
+                    g.drawRect(X * blockCellsSize, Y * blockCellsSize, blockCellsSize, blockCellsSize);
 
-                //Vẽ khung nền
-                g.setColor(new Color(32, 33, 30));
-                g.drawRect(X * blockCellsSize, Y * blockCellsSize, blockCellsSize, blockCellsSize);
+                    if (backgroundColorMatrix[Y][X] != null) {
+                        //Vẽ khối
+                        Block.drawBlockCells(g, X * blockCellsSize, Y * blockCellsSize, blockCellsSize, backgroundColorMatrix[Y][X]);
 
-                if (backgroundColorMatrix[Y][X] != null) {
-
-                    //Vẽ khối
-                    Block.drawBlockCells(g, X * blockCellsSize, Y * blockCellsSize, blockCellsSize, backgroundColorMatrix[Y][X]);
+                    }
                 }
+
             }
         }
+    }
 
-        drawActiveBlock(g);
+    public void startClearLinesEffect() {
+        repaint();
+        clearLinesEffect.nextFrame();
     }
 }

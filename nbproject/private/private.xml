@@ -5,9 +5,9 @@
         <group>
             <file>file:/C:/Users/HeLi/OneDrive/Máy%20tính/Tetris/src/Effect/DropBlockEffect.java</file>
             <file>file:/C:/Users/HeLi/OneDrive/Máy%20tính/Tetris/src/tetris/GameArea.java</file>
-            <file>file:/C:/Users/HeLi/OneDrive/Máy%20tính/Tetris/src/tetris/BlockGenerator.java</file>
             <file>file:/C:/Users/HeLi/OneDrive/Máy%20tính/Tetris/src/tetris/GameForm.java</file>
             <file>file:/C:/Users/HeLi/OneDrive/Máy%20tính/Tetris/src/tetris/Block.java</file>
+            <file>file:/C:/Users/HeLi/OneDrive/Máy%20tính/Tetris/src/tetris/GameThread.java</file>
         </group>
     </open-files>
 </project-private>

@@ -1,6 +1,10 @@
 package tetris;
 
 //**************************************
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 //Đây là lớp được dùng để di chuyển khối gạch xuống sau khoản thời gian nhất định
 //**************************************
 
@@ -15,7 +19,16 @@ public class GameThread extends Thread {
     @Override
     public void run() {
         while (true) {
-            gameArea.checkAndClearFullLines();
+            if (gameArea.checkAndClearFullLines()) {
+                for (int i=0;i<10;i++) {
+                    gameArea.startClearLinesEffect();
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException ex) {
+                    }
+                }
+                gameArea.dropBlocksAboveClearedLines();
+            }
             gameArea.createNewBlock();
             if (gameArea.checkGameOver()) {
                 gameArea.createNewGame();

@@ -22,27 +22,32 @@ import javax.swing.JPanel;
 //Lớp này sẽ được sử dụng để sinh ra các khối gạch khác nhau.
 //Đồng thời sẽ vẽ các khối gạch tiếp theo lên trên bảng xem trước (BlockGeneratorPanel)
 //**************************************
-
 public class BlockGenerator extends JPanel {
-    
+
     //Để lấy khối gạch ở đầu đồng thời cho khối gạch khác vào cuối thì ta sử dụng hàng đợi
     private Queue<Block> nextBlocksQueue;
-    
+
     private Font font;
     
+    //Biến này sẽ lưu độ dày của viền
+    private int innerMargin;
+    
+    private int textX,textY;
+
     private int blockCellSize;
+
     //Phương thức khởi tạo
     public BlockGenerator() {
 
-        this.setBackground(Color.BLACK);
+        this.setBackground(Color.WHITE);
         nextBlocksQueue = new LinkedList<>();
-        
-        font = new Font("Calibri",Font.PLAIN,16);
-        
+
+        font = new Font("Calibri", Font.PLAIN, 16);
+
         blockCellSize = (int) (this.getWidth() * 0.8) / 4;
 
     }
-    
+
     //Trả về khối đầu tiên trong hàng đợi đồng thời sinh ra khối khác để thay thế
     public Block getNextBlock() {
         if (nextBlocksQueue.isEmpty()) {
@@ -54,7 +59,7 @@ public class BlockGenerator extends JPanel {
         }
         nextBlocksQueue.add(this.generateRandomBlock());
         Block newBlock = nextBlocksQueue.poll();
-        
+
         //Sau khi lấy ra thì ta vẽ lại màn hình các khối mới
         repaint();
         return newBlock;
@@ -65,15 +70,19 @@ public class BlockGenerator extends JPanel {
 
         //Chuyển các khối gạch trong hàng đợi sang dạng mảng
         Block[] queueBlocks = nextBlocksQueue.toArray(new Block[0]);
-        
+
         //****************************
         //Tính toán kích thước khối dựa trên kích thước của sổ vẽ hiện tại
         //Sau đó lặp qua danh sách các khối ở trên rồi vẽ từng khối
         //Mỗi khối gạch các nhau một khối gạch con (blockCell)
         //****************************
-        
-        int drawingAreaWidth = this.getWidth();
-        int drawingAreaY = blockCellSize*2;
+        int drawingAreaWidth = this.getWidth() - innerMargin * 2;
+        int drawingAreaHeight = this.getHeight() - innerMargin - blockCellSize;
+
+        int drawingAreaY = blockCellSize * 2;
+
+        g.setColor(Color.BLACK);
+        g.fillRect(innerMargin, blockCellSize, drawingAreaWidth, drawingAreaHeight);
 
         for (int t = 0; t < 5; t++) {
 
@@ -89,7 +98,7 @@ public class BlockGenerator extends JPanel {
             for (int i = 0; i < blockMatrixSize; i++) {
                 for (int j = 0; j < blockMatrixSize; j++) {
                     if (blockShape[i][j] != 0) {
-                        
+
                         //Gọi phương thức trong lớp Block để vẽ ô gạch con (blockcell)
                         Block.drawBlockCells(g, drawingAreaX + j * blockCellSize, drawingAreaY + i * blockCellSize, blockCellSize, queueBlocks[t].getBlockColor());
                     }
@@ -104,7 +113,6 @@ public class BlockGenerator extends JPanel {
         nextBlocksQueue.add(this.taoKhoiGachNo());
     }
 
-    
     //Phương thức sinh ra một khối gạch bất kì
     public Block generateRandomBlock() {
         Random randomBlock = new Random();
@@ -161,32 +169,38 @@ public class BlockGenerator extends JPanel {
         return new GachNo();
     }
 
-    
     //Phương thức kế thừa từ lớp Jpanel dùng để vẽ
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-       
+
         drawQueueBlocks(g);
-        
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, this.getWidth(), blockCellSize);
+
         g.setColor(Color.BLACK);
         g.setFont(font);
-        g.drawString("NEXT", 10,10 );
+        g.drawString("NEXT", textX, textY);
     }
 
     //Cập nhật kích thước và vị trí khi cửa sổ chương trình thay đổi kích thước
+    //Ý tưởng:****************
+    //Tương tự với HoldingBlock
     void updateAreaSize(Rectangle gameAreaSize) {
-        
-        int blockGeneratorHeight = (int)(gameAreaSize.height*0.68);
-        int blockGeneratorWidth = (int)(gameAreaSize.width*0.4);
-        
-        int blockGeneratorX = gameAreaSize.x+gameAreaSize.width + (int)(blockGeneratorWidth*0.1);
+
+        int blockGeneratorHeight = (int) (gameAreaSize.height * 0.68);
+        int blockGeneratorWidth = (int) (gameAreaSize.width * 0.4);
+
+        innerMargin = (int) (blockGeneratorWidth * 0.03);
+
+        int blockGeneratorX = gameAreaSize.x + gameAreaSize.width + (int) (gameAreaSize.width * 0.02);
         int blockGeneratorY = gameAreaSize.y;
-        
+
         this.setBounds(blockGeneratorX, blockGeneratorY, blockGeneratorWidth, blockGeneratorHeight);
+
+        blockCellSize = (int) (blockGeneratorWidth * 0.8) / 4;
         
-        blockCellSize = (int)(blockGeneratorWidth * 0.8) / 4;
+        //Xác định kích vị trí, kích thước của chữ "NEXT"
+        textX=(int) (blockGeneratorWidth * 0.1);
+        textY=(int) (blockGeneratorWidth * 0.15);
+        font = font.deriveFont((float)(blockCellSize));
     }
 }
