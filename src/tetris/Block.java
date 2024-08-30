@@ -181,7 +181,7 @@ public class Block {
     //Xoay khối nếu có thể
     //Ý tưởng tương tự như đi xuống, ta sẽ xoay khối và kiếm tra va chạm
     //nếu không có va chạm thì trả true, nếu có thì quay lại hình dạng trước và trả false
-    public boolean rotate() {
+    public boolean rotateClockWise() {
         int previousBlockShapeIndex = currentBlockShapeIndex;
         if (currentBlockShapeIndex == 3) {
             currentBlockShapeIndex = 0;

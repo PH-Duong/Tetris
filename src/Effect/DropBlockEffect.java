@@ -28,7 +28,7 @@ public class DropBlockEffect extends Thread {
 
             Point gameAreaLocation = gameArea.getLocation();
 
-            int numPixel = 3;
+            int numPixel = 4;
             while (numPixel-- > 0) {
                 gameAreaLocation.y++;
                 gameArea.setLocation(gameAreaLocation);
@@ -37,7 +37,7 @@ public class DropBlockEffect extends Thread {
                 } catch (InterruptedException ex) {
                 }
             }
-            numPixel = 3;
+            numPixel = 4;
             while (numPixel-- > 0) {
                 gameAreaLocation.y--;
                 gameArea.setLocation(gameAreaLocation);

@@ -1,7 +1,11 @@
 package tetris;
 
-import java.awt.Color;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.Timer;
 
 //**************************************
@@ -12,13 +16,13 @@ import javax.swing.Timer;
 
 public class GameForm extends javax.swing.JFrame implements KeyListener {
 
-    private HoldingBlock storedBlock;
-    
     private GameForm gameForm;
-    
+
+    private HoldingBlock storedBlock;
     private GameArea gameArea;
-    
     private BlockGenerator blockGenerator;
+    private SpeedAndLevelSystem speedAndLevelSystem;
+    private ScoreAndTimeSystem scoreAndTimeSystem;
     
     //Luồng game
     private GameThread gameThread;
@@ -33,23 +37,37 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     public GameForm() {
         initComponents();
         
-        gameForm = this;
+        //Thêm ảnh vào Background của cửa sổ game
+         JLabel jl = null;
+        try {
+            jl = new JLabel(new ImageIcon(ImageIO.read( new File("Test.jpg"))));
+        } catch (IOException ex) {
+            System.out.println("Lỗi tải ảnh");
+        }
+        this.setContentPane(jl);
         
-        this.getContentPane().setBackground(Color.GRAY);
-
-        //Game luôn ở trên cửa sổ khác
+        //Thêm tính năng vào cửa sổ
         this.setAlwaysOnTop(true);
+        
+        //Thêm chức năng di chuyển từ bàn phím
         addKeyListener(this);
 
+        gameForm = this;
+        
         gameArea = new GameArea();
         blockGenerator = new BlockGenerator();
         storedBlock = new HoldingBlock();
+        speedAndLevelSystem = new SpeedAndLevelSystem();
+        scoreAndTimeSystem = new ScoreAndTimeSystem();
+        
         gameArea.addBlockGenerator(blockGenerator);
         gameArea.addStoredBlock(storedBlock);
         
         this.add(gameArea);
         this.add(blockGenerator);
         this.add(storedBlock);
+        this.add(speedAndLevelSystem);
+        this.add(scoreAndTimeSystem);
         
         //Khởi tạo luồng game
         startGameThread();
@@ -58,12 +76,16 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         this.canDrop = true;
         this.canStore = true;
         
+        //Lắng nghe thay đổi cửa sổ
+        //Nếu có thay đổi thì cập nhật lại thông số cho các cửa sổ con bên trong
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 gameArea.updateAreaSize(gameForm.getBounds());
                 blockGenerator.updateAreaSize(gameArea.getBounds());
                 storedBlock.updateAreaSize(gameArea.getBounds());
+                speedAndLevelSystem.updateAreaSize(gameArea.getBounds());
+                scoreAndTimeSystem.updateAreaSize(gameArea.getBounds());
             }
             
         });
@@ -89,6 +111,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tetris Project");
+        setMinimumSize(new java.awt.Dimension(440, 480));
 
         NewGameButton.setText("New Game");
         NewGameButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -122,13 +145,13 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
 
 //Hành động sẽ được thực hiện khi ấn nút new game
     private void NewGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NewGameButtonActionPerformed
-        gameArea.createNewGame();
+        gameArea.newGame();
         gameArea.createNewBlock();
     }//GEN-LAST:event_NewGameButtonActionPerformed
 
     //bắt đầu luồng game
     public void startGameThread() {
-        gameThread = new GameThread(gameArea);
+        gameThread = new GameThread(gameArea,speedAndLevelSystem,scoreAndTimeSystem);
         gameThread.start();
     }
 
@@ -144,7 +167,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
             if (canRotate) {
                 canRotate = false;
-                gameArea.rotateBlock();
+                gameArea.rotateBlockClockWise();
             }
         }
         if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) {

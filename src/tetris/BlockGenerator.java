@@ -203,4 +203,10 @@ public class BlockGenerator extends JPanel {
         textY=(int) (blockGeneratorWidth * 0.15);
         font = font.deriveFont((float)(blockCellSize));
     }
+    
+    //Làm mới hàng đợi khối khi có yêu cầu
+    public void newGame() {
+        nextBlocksQueue = new LinkedList<>();
+        this.getNextBlock();
+    }
 }

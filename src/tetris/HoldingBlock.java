@@ -134,4 +134,8 @@ public class HoldingBlock extends JPanel {
         g.setFont(font);
         g.drawString("HOLD", textX, textY);
     }
+    
+    void newGame() {
+        
+    }
 }

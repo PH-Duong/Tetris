@@ -36,8 +36,12 @@ public class GameArea extends JPanel {
     //biến kiểm tra game kết thúc chưa
     private boolean gameOver;
 
+    //Biến này sẽ lưu vị trí các hàng bị đầy
+    //Tối đa ta có 4 hàng nên mảng sẽ có 4 giá trị
+    //Nếu có ít hơn 4 hàng thì các giá trị trống để -1
     private int[] fullLinesList;
 
+    //Hiệu ứng xoá hàng
     private ClearLinesEffect clearLinesEffect;
 
     //Phương thức khởi tạo
@@ -126,13 +130,14 @@ public class GameArea extends JPanel {
     }
 
     //Khởi tạo game mới
-    public void createNewGame() {
+    public void newGame() {
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 backgroundColorMatrix[i][j] = null;
             }
         }
         gameOver = false;
+        blockGenerator.newGame();
     }
 
     //Di chuyển gạch xuống dưới
@@ -176,13 +181,15 @@ public class GameArea extends JPanel {
     }
 
     //Xoay khối gạch
-    public void rotateBlock() {
-        if (block.rotate()) {
+    public void rotateBlockClockWise() {
+        if (block.rotateClockWise()) {
             repaint();
         }
     }
 
-    public boolean checkAndClearFullLines() {
+    //Kiểm tra có hàng nào đầy không
+    //Đồng thời trả về số lượng hàng đầy
+    public int checkAndCountFullLines() {
         int t = 0;
         for (int i = 0; i <20; i++) {
             boolean check = true;
@@ -193,7 +200,6 @@ public class GameArea extends JPanel {
                 }
             }
             if (check) {
-                System.out.println(t);
                 fullLinesList[t++] = i;
             }
         }
@@ -201,7 +207,7 @@ public class GameArea extends JPanel {
         if (t==4) {
             clearLinesEffect.setIs4Line(true);
         }
-        return t != 0;
+        return t;
     }
 
     public boolean checkGameOver() {
@@ -228,6 +234,9 @@ public class GameArea extends JPanel {
         fullLinesList[0] = fullLinesList[1] = fullLinesList[2] = fullLinesList[3] = -1;
         repaint();
         clearLinesEffect.setIs4Line(false);
+        
+        //Thêm hiệu ứng khối rơi khi đầy hàng để cho đẹp hơn =))
+        dropBlockEffect.setDrop();
     }
 
     //Chuyển khối gạch vào nền
@@ -288,7 +297,8 @@ public class GameArea extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawActiveBlock(g);
+        if (fullLinesList[0]==-1 && fullLinesList[1]==-1 && fullLinesList[2]==-1 && fullLinesList[3]==-1 )
+            drawActiveBlock(g);
 
         for (int Y = 0; Y < 20; Y++) {
             for (int X = 0; X < 10; X++) {
@@ -310,6 +320,10 @@ public class GameArea extends JPanel {
         }
     }
 
+    //Hiệu ứng xoá hàng
+    //Phương thức này sẽ được gọi liên tục trong GameThread khi có hàng đầy
+    //Mỗi lần gọi hàm sẽ sinh ra một frame mới
+    //Do gọi hàm liên tục nên sẽ tạo ra hiệu ứng nháy trên màn hình
     public void startClearLinesEffect() {
         repaint();
         clearLinesEffect.nextFrame();
