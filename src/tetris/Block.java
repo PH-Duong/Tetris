@@ -7,43 +7,67 @@ import java.awt.Polygon;
 //**************************************
 //Đây là lớp chứa các thông tin liên quan đến Block
 //**************************************
-
 public class Block {
 
     //Ta sẽ chứa hình dạng hiện thời của khối dưới dạng ma trận với 1 là có ô gạch con và 0 ngược lại
     private int[][] blockShape;
-    
+
     //biến này sẽ chứa hình dạng của khối gạch khi xoay ở các góc 90 độ khác nhau, tối đa có 4 hình dạng khác nhau
     private int[][][] blockShapesList;
-    
+
+    private static final int[][][] WALL_KICK_NOMAL_BLOCK = {
+        {{0, 0}, {-1, 0}, {-1, 1}, {0, -2}, {-1, -2}}, //0->1
+        {{0, 0}, {1, 0}, {1, -1}, {0, 2}, {1, 2}}, //1->2
+        {{0, 0}, {1, 0}, {1, 1}, {0, -2}, {1, -2}}, //2->3
+        {{0, 0}, {-1, 0}, {-1, -1}, {0, 2}, {-1, 2}} //3->0
+    };
+    private static final int WALL_KICK_NOMAL_BLOCK_180[][][] = {
+        {{0, 0}, {1, 0}, {2, 0}, {1, 1}, {2, 1}, {-1, 0}, {-2, 0}, {-1, 1}, {-2, 1}, {0, -1}, {3, 0}, {-3, 0}}, // 0>>2─┐
+        {{0, 0}, {0, -1}, {0, -2}, {1, -1}, {1, -2}, {0, 1}, {0, 2}, {1, 1}, {1, 2}, {-1, 0}, {0, -3}, {0, 3}}, // 1>>3─┼┐
+        {{0, 0}, {-1, 0}, {-2, 0}, {-1, -1}, {-2, -1}, {1, 0}, {2, 0}, {1, -1}, {2, -1}, {0, 1}, {-3, 0}, {3, 0}}, // 2>>0─┘│
+        {{0, 0}, {0, -1}, {0, -2}, {-1, -1}, {-1, -2}, {0, 1}, {0, 2}, {-1, 1}, {-1, 2}, {1, 0}, {0, -3}, {0, 3}}, // 3>>1──┘
+    };
+    private static final int[][][] WALL_KICK_I_BLOCK = {
+        {{0, 0}, {-2, 0}, {1, 0}, {-2, -1}, {1, 2}}, //0->1
+        {{0, 0}, {-1, 0}, {2, 0}, {-1, 2}, {2, -1}}, //1->2
+        {{0, 0}, {2, 0}, {-1, 0}, {2, 1}, {-1, -2}}, //2->3
+        {{0, 0}, {1, 0}, {-2, 0}, {1, -2}, {-2, 1}} //3->4
+    };
+
+    private static final int[][][] WALL_KICK_I_BLOCK_180 = {
+        {{0, 0}, {-1, 0}, {-2, 0}, {1, 0}, {2, 0}, {0, 1}}, // 0>>2─┐
+        {{0, 0}, {0, 1}, {0, 2}, {0, -1}, {0, -2}, {-1, 0}}, // 1>>3─┼┐
+        {{0, 0}, {1, 0}, {2, 0}, {-1, 0}, {-2, 0}, {0, -1}}, // 2>>0─┘│
+        {{0, 0}, {0, 1}, {0, 2}, {0, -1}, {0, -2}, {1, 0}}}; // 3>>1──┘
+
     //Biến này dùng để xác định vị trí hình dạng hiện tại trong danh sách hình dạng ở trên
     private int currentBlockShapeIndex;
-    
+
     //Màu của khối gạch
     private Color blockColor;
-    
+
     //Toạ độ x,y trên ma trận màu sắc ở dưới (cái này khác với toạ độ trên màn hình)
     private int x, y;
-    
+
     //Tạo độ y ban đầu khi được tạo ra (được dùng để reset khối về vị trí ban đầu)
-    private int initX,initY;
-    
+    private int initX, initY;
+
     //Ma trận màu sắc để xác định các khối hiện có trong nền
     private Color[][] backgroundColorMatrix;
-    
-    private LoaiGach loaiGach;
+
+    private BLockType blockType;
 
     //Phương thức khởi tạo
-    public Block(int[][] blockShape, Color blockColor, int x, int y, LoaiGach loaigach) {
+    public Block(int[][] blockShape, Color blockColor, int x, int y, BLockType blockType) {
         this.blockShape = blockShape;
         this.blockColor = blockColor;
         this.x = this.initX = x;
         this.y = this.initY = y;
         generateAllBlockShapes();
         this.currentBlockShapeIndex = 0;
-        this.loaiGach = loaigach;
+        this.blockType = blockType;
     }
-    
+
     //Ma trận màu sắc gốc ở lớp GameArea nên ta sẽ tham chiếu đến nó
     //Ma trận này sẽ được dùng để xác định va chạm
     public void setBackgroundColorMatrix(Color[][] backgroundColorMatrix) {
@@ -65,7 +89,6 @@ public class Block {
         }
     }
 
-    
     //phương thức vẽ ô gạch
     public static void drawBlockCells(Graphics g, int x, int y, int blockCellSize, Color cellColor) {
 
@@ -102,10 +125,10 @@ public class Block {
 
         //Tô màu ô vuông
         g.setColor(cellColor);
-        
+
         //Vẽ hình vuông bé hơn bên trong
-        int innerMargin = (int)(blockCellSize*0.24);
-        g.fillRect(x + innerMargin/2, y + innerMargin/2, blockCellSize - innerMargin, blockCellSize - innerMargin);
+        int innerMargin = (int) (blockCellSize * 0.24);
+        g.fillRect(x + innerMargin / 2, y + innerMargin / 2, blockCellSize - innerMargin, blockCellSize - innerMargin);
 
     }
 
@@ -120,7 +143,7 @@ public class Block {
         y--;
         return true;
     }
-    
+
     //Xuống 1 ô nếu có thể
     public boolean moveDown() {
         if (canMoveDown()) {
@@ -178,47 +201,145 @@ public class Block {
         return true;
     }
 
-    //Xoay khối nếu có thể
-    //Ý tưởng tương tự như đi xuống, ta sẽ xoay khối và kiếm tra va chạm
-    //nếu không có va chạm thì trả true, nếu có thì quay lại hình dạng trước và trả false
+    
+    //Quay khối theo chiều kim đồng hồ
+    //Do khối I có dữ liệu WallKick khác các khối khác
+    //Nên khi xoay cần phần biệt riêng
     public boolean rotateClockWise() {
+        
+        //Lưu thông số khối ở trạng thái ban đầu để trả về như cũ nếu
+        //không xoay được khối
         int previousBlockShapeIndex = currentBlockShapeIndex;
-        if (currentBlockShapeIndex == 3) {
-            currentBlockShapeIndex = 0;
+        int previousX = x;
+        int previousY = y;
+
+        //Xác định hình dạng khối kế tiếp
+        currentBlockShapeIndex = (currentBlockShapeIndex + 1) % 4;
+        blockShape = blockShapesList[currentBlockShapeIndex];
+        
+        if (blockType == blockType.I_BLOCK) {
+            for (int i = 0; i < WALL_KICK_I_BLOCK[0].length; i++) {
+                x = previousX + WALL_KICK_I_BLOCK[previousBlockShapeIndex][i][0];
+                y = previousY - WALL_KICK_I_BLOCK[previousBlockShapeIndex][i][1];
+
+                //Nếu không xảy ra va chạm khi xoay khối thì giữ hình dạng hiện tại
+                if (checkCollision() == false) {
+                    return true;
+                }
+
+            }
         } else {
-            currentBlockShapeIndex++;
+            for (int i = 0; i < WALL_KICK_NOMAL_BLOCK[0].length; i++) {
+                x = previousX + WALL_KICK_NOMAL_BLOCK[previousBlockShapeIndex][i][0];
+                y = previousY - WALL_KICK_NOMAL_BLOCK[previousBlockShapeIndex][i][1];
+
+                //Nếu không xảy ra va chạm khi xoay khối thì giữ hình dạng hiện tại
+                if (checkCollision() == false) {
+                    return true;
+
+                }
+            }
         }
+
+        //Nếu không có trường hợp nào thoả mãn thì cho khối về trạng thái ban đầu
+        blockShape = blockShapesList[previousBlockShapeIndex];
+        currentBlockShapeIndex = previousBlockShapeIndex;
+        x = previousX;
+        y = previousY;
+        return false;
+    }
+
+    
+    //Xoay khối ngược chiều kim đồng hồ
+    //Ý tưởng tương tự như xoay theo chiều kim đồng hồ
+    public boolean rotateCounterClockWise() {
+        int previousBlockShapeIndex = currentBlockShapeIndex;
+        int previousX = x;
+        int previousY = y;
+
+        currentBlockShapeIndex = (currentBlockShapeIndex - 1 + 4) % 4;
+
         blockShape = blockShapesList[currentBlockShapeIndex];
 
-        if (checkCollision()) {
+        if (blockType == blockType.I_BLOCK) {
+            for (int i = 0; i < WALL_KICK_I_BLOCK[0].length; i++) {
+                x = previousX - WALL_KICK_I_BLOCK[currentBlockShapeIndex][i][0];
+                y = previousY + WALL_KICK_I_BLOCK[currentBlockShapeIndex][i][1];
 
-            //Kỹ thuật đẩy khối khi xoay khối gần tường
-            x++;
-            if (checkCollision() == false) {
-                return true;
-            }
-            x -= 2;
-            if (checkCollision() == false) {
-                return true;
-            }
-            x++;
+                if (checkCollision() == false) {
+                    return true;
+                }
 
-            blockShape = blockShapesList[previousBlockShapeIndex];
-            currentBlockShapeIndex = previousBlockShapeIndex;
-            return false;
+            }
+        } else {
+            for (int i = 0; i < WALL_KICK_NOMAL_BLOCK[0].length; i++) {
+                x = previousX - WALL_KICK_NOMAL_BLOCK[currentBlockShapeIndex][i][0];
+                y = previousY + WALL_KICK_NOMAL_BLOCK[currentBlockShapeIndex][i][1];
+
+                if (checkCollision() == false) {
+                    return true;
+
+                }
+            }
         }
-        return true;
+
+        blockShape = blockShapesList[previousBlockShapeIndex];
+        currentBlockShapeIndex = previousBlockShapeIndex;
+        x = previousX;
+        y = previousY;
+        return false;
+    }
+
+    
+    //Xoay khối 180 độ
+    //Ý tưởng tương tự như trên
+    public boolean rotate180() {
+        int previousBlockShapeIndex = currentBlockShapeIndex;
+        int previousX = x;
+        int previousY = y;
+
+        currentBlockShapeIndex = (currentBlockShapeIndex + 2) % 4;
+
+        blockShape = blockShapesList[currentBlockShapeIndex];
+
+        if (blockType == blockType.I_BLOCK) {
+            for (int i = 0; i < WALL_KICK_I_BLOCK_180[0].length; i++) {
+                x = previousX + WALL_KICK_I_BLOCK_180[currentBlockShapeIndex][i][0];
+                y = previousY - WALL_KICK_I_BLOCK_180[currentBlockShapeIndex][i][1];
+
+                if (checkCollision() == false) {
+                    return true;
+                }
+
+            }
+        } else {
+            for (int i = 0; i < WALL_KICK_NOMAL_BLOCK_180[0].length; i++) {
+                x = previousX + WALL_KICK_NOMAL_BLOCK_180[currentBlockShapeIndex][i][0];
+                y = previousY - WALL_KICK_NOMAL_BLOCK_180[currentBlockShapeIndex][i][1];
+
+                if (checkCollision() == false) {
+                    return true;
+
+                }
+            }
+        }
+
+        blockShape = blockShapesList[previousBlockShapeIndex];
+        currentBlockShapeIndex = previousBlockShapeIndex;
+        x = previousX;
+        y = previousY;
+        return false;
     }
 
     public void resetPosition() {
         y = initY;
         x = initX;
     }
-    
+
     public int[][] getCurrentBlockShape() {
         return blockShape;
     }
-    
+
     public int[][] getInitialBlockShape() {
         return blockShapesList[0];
     }
@@ -247,8 +368,8 @@ public class Block {
         return GhostBlockY;
     }
 
-    public LoaiGach layLoaiGach() {
-        return loaiGach;
+    public BLockType getBlockType() {
+        return blockType;
     }
 
 }

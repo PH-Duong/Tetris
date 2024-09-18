@@ -2,7 +2,7 @@ package tetris.TetrisBlock;
 
 import java.awt.Color;
 import tetris.Block;
-import tetris.LoaiGach;
+import tetris.BLockType;
 
 public class OBlock extends Block {
 
@@ -13,7 +13,7 @@ public class OBlock extends Block {
                             {0,1,1,0},
                             {0,1,1,0},
                             {0,0,0,0}};
-        super(blockShape,blockColor,4,-1,LoaiGach.GACH_THUONG);
+        super(blockShape,blockColor,4,-1,BLockType.NORMAL_BLOCK);
     }
     
 }

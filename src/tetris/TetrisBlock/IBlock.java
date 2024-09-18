@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import tetris.Block;
-import tetris.LoaiGach;
+import tetris.BLockType;
 
 public class IBlock extends Block {
     
@@ -12,10 +12,10 @@ public class IBlock extends Block {
     
     public IBlock() {
         int[][] blockShape = {{0,0,0,0},
-                            {0,0,0,0},
                             {1,1,1,1},
+                            {0,0,0,0},
                             {0,0,0,0}};
-        super(blockShape,blockColor,3,-3,LoaiGach.GACH_THUONG);
+        super(blockShape,blockColor,3,-2,BLockType.I_BLOCK);
     }
     
 }

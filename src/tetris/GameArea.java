@@ -6,8 +6,6 @@ import tetris.TetrisBlock.GachNo;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 //**************************************
@@ -33,8 +31,17 @@ public class GameArea extends JPanel {
     //lớp hiệu ứng thả khối
     private DropBlockEffect dropBlockEffect;
 
+    //Luồng game
+    private GameThread gameThread;
+
     //biến kiểm tra game kết thúc chưa
     private boolean gameOver;
+
+    //biến lưu level game
+    private int gameLevel;
+
+    //Lớp quản lý màn chơi theo level
+    private LevelMatrix levelMatrix;
 
     //Biến này sẽ lưu vị trí các hàng bị đầy
     //Tối đa ta có 4 hàng nên mảng sẽ có 4 giá trị
@@ -97,6 +104,18 @@ public class GameArea extends JPanel {
         this.storedBlock = storedBlock;
     }
 
+    //Tham chiếu đến luồng game để thực hiện ngắt chờ khi có khối gạch chạm đáy
+    public void addGameThread(GameThread gameThread) {
+        this.gameThread = gameThread;
+    }
+
+    //thêm level
+    public void setGameLevel(int gameLevel) {
+        this.gameLevel = gameLevel;
+        levelMatrix = new LevelMatrix(gameLevel);
+        
+    }
+
     //Thực hiện lưu hoặc swap block
     //Ý tưởng:*********************
     //+Đầu tiên ta cần kiểm tra xem khối đã được swap lần nào hay chưa,
@@ -121,23 +140,36 @@ public class GameArea extends JPanel {
 
     //Tạo khối gạch mới
     public void createNewBlock() {
+        if (gameLevel > 0) {
+            levelMatrix.setBlockGenerator(blockGenerator);
+        }
+
         block = blockGenerator.getNextBlock();
 
         //Cho block tham chiếu đến ma trận màu sắc
         block.setBackgroundColorMatrix(backgroundColorMatrix);
 
         storedBlock.resetHasSwappedHoldingBlock();
+
     }
 
     //Khởi tạo game mới
     public void newGame() {
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 10; j++) {
-                backgroundColorMatrix[i][j] = null;
-            }
-        }
+        levelMatrix.setLevelMatrix(backgroundColorMatrix);
         gameOver = false;
         blockGenerator.newGame();
+    }
+
+    //Kiểm tra xem có hoàn thành phòng tập chưa
+    //Phải tạo phương thức mới mà không tích hợp với newGame là bởi:
+    //Newgame là khi có khối chạm trần mà ở trong phòng tập thì không
+    //có trường hợp đấy vì luôn rest lại phòng mỗi khi block không đúng vị trí
+    private void checkTrainingCompletion() {
+        checkAndCountFullLines();
+        if (levelMatrix.isBlockPositionCorrect(fullLinesList)) {
+            Tetris.nextLevel(gameLevel);
+        }
+        gameOver = true;
     }
 
     //Di chuyển gạch xuống dưới
@@ -180,9 +212,32 @@ public class GameArea extends JPanel {
         return false;
     }
 
-    //Xoay khối gạch
+    //Xoay khối gạch theo chiều kim đồng hồ
     public void rotateBlockClockWise() {
+        if (gameThread.checkBlockAlive() == false) {
+            return;
+        }
         if (block.rotateClockWise()) {
+            repaint();
+        }
+    }
+
+    //Xoay khối gạch ngược chiều kim đồng hồ
+    public void rotateBlockCounterClockWise() {
+        if (gameThread.checkBlockAlive() == false) {
+            return;
+        }
+        if (block.rotateCounterClockWise()) {
+            repaint();
+        }
+    }
+    
+    //Xoay khối gạch 180 độ
+    public void rotateBlock180() {
+        if (gameThread.checkBlockAlive() == false) {
+            return;
+        }
+        if (block.rotate180()) {
             repaint();
         }
     }
@@ -191,7 +246,7 @@ public class GameArea extends JPanel {
     //Đồng thời trả về số lượng hàng đầy
     public int checkAndCountFullLines() {
         int t = 0;
-        for (int i = 0; i <20; i++) {
+        for (int i = 0; i < 20; i++) {
             boolean check = true;
             for (int j = 0; j < 10; j++) {
                 if (backgroundColorMatrix[i][j] == null) {
@@ -203,13 +258,14 @@ public class GameArea extends JPanel {
                 fullLinesList[t++] = i;
             }
         }
-        
-        if (t==4) {
+
+        if (t == 4) {
             clearLinesEffect.setIs4Line(true);
         }
         return t;
     }
 
+    //Kiểm tra game kết thúc
     public boolean checkGameOver() {
         return gameOver;
     }
@@ -234,14 +290,14 @@ public class GameArea extends JPanel {
         fullLinesList[0] = fullLinesList[1] = fullLinesList[2] = fullLinesList[3] = -1;
         repaint();
         clearLinesEffect.setIs4Line(false);
-        
+
         //Thêm hiệu ứng khối rơi khi đầy hàng để cho đẹp hơn =))
         dropBlockEffect.setDrop();
     }
 
-    //Chuyển khối gạch vào nền
+    //Chuyển khối gạch vào nền, đồng thời thực hiện ngắt chờ của luồng game.
     private void embedBlockIntoMatrix() {
-        if (block.layLoaiGach() == LoaiGach.GACH_NO) {
+        if (block.getBlockType() == BLockType.TNT_BLOCK) {
             GachNo.noGach(backgroundColorMatrix, block.getX(), block.getY());
             repaint();
             return;
@@ -266,6 +322,15 @@ public class GameArea extends JPanel {
                 }
             }
         }
+
+        //Game level=0 sẽ là chế độ thường còn từ 1->.. là chế độ luyện tập
+        if (gameLevel > 0) {
+            checkTrainingCompletion();
+        }
+
+        //Sau khi cho khối gạch vào ma trận nền thì ngắt sleep của gameThread
+        //để sinh ra khối mới ngay lập.
+        gameThread.interrupt();
     }
 
     //Vẽ khối gạch hiện tại đang được điều khuyển
@@ -297,8 +362,9 @@ public class GameArea extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (fullLinesList[0]==-1 && fullLinesList[1]==-1 && fullLinesList[2]==-1 && fullLinesList[3]==-1 )
+        if (fullLinesList[0] == -1 && fullLinesList[1] == -1 && fullLinesList[2] == -1 && fullLinesList[3] == -1) {
             drawActiveBlock(g);
+        }
 
         for (int Y = 0; Y < 20; Y++) {
             for (int X = 0; X < 10; X++) {
@@ -322,8 +388,8 @@ public class GameArea extends JPanel {
 
     //Hiệu ứng xoá hàng
     //Phương thức này sẽ được gọi liên tục trong GameThread khi có hàng đầy
-    //Mỗi lần gọi hàm sẽ sinh ra một frame mới
-    //Do gọi hàm liên tục nên sẽ tạo ra hiệu ứng nháy trên màn hình
+    //Mỗi lần gọi phương thức sẽ sinh ra một frame mới
+    //Do gọi phương thức liên tục nên sẽ tạo ra hiệu ứng nháy trên màn hình
     public void startClearLinesEffect() {
         repaint();
         clearLinesEffect.nextFrame();

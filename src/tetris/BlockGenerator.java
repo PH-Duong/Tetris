@@ -2,14 +2,7 @@ package tetris;
 
 import java.awt.Color;
 import java.awt.Font;
-import tetris.TetrisBlock.OBlock;
-import tetris.TetrisBlock.LBlock;
-import tetris.TetrisBlock.JBlock;
-import tetris.TetrisBlock.GachNo;
-import tetris.TetrisBlock.TBlock;
-import tetris.TetrisBlock.SBlock;
-import tetris.TetrisBlock.ZBlock;
-import tetris.TetrisBlock.IBlock;
+import tetris.TetrisBlock.*;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -136,6 +129,70 @@ public class BlockGenerator extends JPanel {
                 throw new AssertionError();
         }
     }
+    
+    public void fillQueueWithTBlock() {
+        nextBlocksQueue.clear();
+        nextBlocksQueue.add(this.generateTBlock());
+        nextBlocksQueue.add(this.generateTBlock());
+        nextBlocksQueue.add(this.generateTBlock());
+        nextBlocksQueue.add(this.generateTBlock());
+        nextBlocksQueue.add(this.generateTBlock());
+    }
+
+    public void fillQueueWithIBlock() {
+        nextBlocksQueue.clear();
+        nextBlocksQueue.add(this.generateIBlock());
+        nextBlocksQueue.add(this.generateIBlock());
+        nextBlocksQueue.add(this.generateIBlock());
+        nextBlocksQueue.add(this.generateIBlock());
+        nextBlocksQueue.add(this.generateIBlock());
+    }
+
+    public void fillQueueWithLBlock() {
+        nextBlocksQueue.clear();
+        nextBlocksQueue.add(this.generateLBlock());
+        nextBlocksQueue.add(this.generateLBlock());
+        nextBlocksQueue.add(this.generateLBlock());
+        nextBlocksQueue.add(this.generateLBlock());
+        nextBlocksQueue.add(this.generateLBlock());
+    }
+
+    public void fillQueueWithJBlock() {
+        nextBlocksQueue.clear();
+        nextBlocksQueue.add(this.generateJBlock());
+        nextBlocksQueue.add(this.generateJBlock());
+        nextBlocksQueue.add(this.generateJBlock());
+        nextBlocksQueue.add(this.generateJBlock());
+        nextBlocksQueue.add(this.generateJBlock());
+    }
+
+    public void fillQueueWithZBlock() {
+        nextBlocksQueue.clear();
+        nextBlocksQueue.add(this.generateZBlock());
+        nextBlocksQueue.add(this.generateZBlock());
+        nextBlocksQueue.add(this.generateZBlock());
+        nextBlocksQueue.add(this.generateZBlock());
+        nextBlocksQueue.add(this.generateZBlock());
+    }
+
+    public void fillQueueWithSBlock() {
+        nextBlocksQueue.clear();
+        nextBlocksQueue.add(this.generateSBlock());
+        nextBlocksQueue.add(this.generateSBlock());
+        nextBlocksQueue.add(this.generateSBlock());
+        nextBlocksQueue.add(this.generateSBlock());
+        nextBlocksQueue.add(this.generateSBlock());
+    }
+
+    public void fillQueueWithOBlock() {
+        nextBlocksQueue.clear();
+        nextBlocksQueue.add(this.generateOBlock());
+        nextBlocksQueue.add(this.generateOBlock());
+        nextBlocksQueue.add(this.generateOBlock());
+        nextBlocksQueue.add(this.generateOBlock());
+        nextBlocksQueue.add(this.generateOBlock());
+    }
+
 
     public Block generateTBlock() {
         return new TBlock();
@@ -206,7 +263,7 @@ public class BlockGenerator extends JPanel {
     
     //Làm mới hàng đợi khối khi có yêu cầu
     public void newGame() {
-        nextBlocksQueue = new LinkedList<>();
+        nextBlocksQueue.clear();
         this.getNextBlock();
     }
 }

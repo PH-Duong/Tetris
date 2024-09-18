@@ -11,18 +11,35 @@ public class GameThread extends Thread {
     private ScoreAndTimeSystem scoreAndTimeSystem;
     
     private volatile int gameSpeed;
+    private volatile boolean isBlockAlive;
 
     public GameThread(GameArea gameArea, SpeedAndLevelSystem speedAndLevelSystem,ScoreAndTimeSystem scoreAndTimeSystem) {
         this.gameArea = gameArea;
         this.speedAndLevelSystem = speedAndLevelSystem;
         this.scoreAndTimeSystem = scoreAndTimeSystem;
-        this.gameSpeed = 500;
+    }
+    
+    //Kiểm tra xem Block có còn 'sống' không
+    //Tránh trường hợp xảy ra các lỗi không mong muốn khi Thread đang
+    //trong quá trình chạy hiệu ứng nháy thì người chơi nhấn xoay khối
+    public boolean checkBlockAlive() {
+        return isBlockAlive;
+    }
+    
+    //Khởi tạo game mới
+    public void newGame() {
+        gameArea.newGame();
+        speedAndLevelSystem.newGame();
+        scoreAndTimeSystem.newGame();
+        this.gameSpeed = 1000;
     }
     
     @Override
     public void run() {
+        this.newGame();
         while (true) {
             
+            isBlockAlive = false;
             //Đếm xem có hàng nào full không
             int FullLinesNum = gameArea.checkAndCountFullLines();
             
@@ -46,17 +63,19 @@ public class GameThread extends Thread {
                 scoreAndTimeSystem.addPointsForClearLines(FullLinesNum,speedAndLevelSystem.getLevel());
             }
             
+            if (gameArea.checkGameOver()) {
+                this.newGame();
+            }
+            
             //Tạo khối mới
             gameArea.createNewBlock();
+            isBlockAlive = true;
+            
             //Tăng điểm khi khối mới được tạo
             scoreAndTimeSystem.addPointsForNewBlock(speedAndLevelSystem.getLevel());
             
             //Kiểm tra game kết thúc, nếu có thì làm mới game
-            if (gameArea.checkGameOver()) {
-                gameArea.newGame();
-                speedAndLevelSystem.newGame();
-                scoreAndTimeSystem.newGame();
-            }
+
             
             //Cho khối game đi xuống 1 ô nếu có thể.
             //Sau mỗi lần di chuyển 1 ô thì nghỉ gameSpeed thời gian

@@ -2,14 +2,14 @@ package tetris.TetrisBlock;
 
 import java.awt.Color;
 import tetris.Block;
-import tetris.LoaiGach;
+import tetris.BLockType;
 
 public class GachNo extends Block {
     
     public GachNo() {
         int[][] hinhdang = {{1,1},
                             {1,1}};
-        super(hinhdang,Color.RED,4,-1,LoaiGach.GACH_NO);
+        super(hinhdang,Color.RED,4,-1,BLockType.TNT_BLOCK);
     }
     
     public static void noGach(Color[][] maTranNen, int x, int y) {

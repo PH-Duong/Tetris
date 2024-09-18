@@ -10,7 +10,7 @@ import javax.swing.Timer;
 
 //**************************************
 //Đây là lớp được dùng để quản lý cửa sổ game
-//Lấy luồng điều khuyển từ bàn phím
+//Lấy luồng điều khiển từ bàn phím
 //**************************************
 
 
@@ -27,13 +27,14 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     //Luồng game
     private GameThread gameThread;
 
-    //biến này sẽ chứa tốc độ điều khuyển
-    private final int keyPressedDelay = 70;
-    
+    //biến này sẽ chứa tốc độ điều khiển
+    private final int keyPressedDelay = 80;
+
     //Cho phép di chuyển hoặc không
-    private boolean canMoveLeft, canMoveRight, canMoveDown, canRotate, canDrop, canStore;
+    private boolean canMoveLeft, canMoveRight, canMoveDown, canRotateClockWise, canRotateCounterClockWise, canRotate180,canDrop, canStore;
 
      //Phương thức khởi tạo
+    
     public GameForm() {
         initComponents();
         
@@ -54,25 +55,30 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
 
         gameForm = this;
         
+        //Khởi tạo các lớp cần thiết
         gameArea = new GameArea();
         blockGenerator = new BlockGenerator();
         storedBlock = new HoldingBlock();
         speedAndLevelSystem = new SpeedAndLevelSystem();
         scoreAndTimeSystem = new ScoreAndTimeSystem();
+        gameThread = new GameThread(gameArea,speedAndLevelSystem,scoreAndTimeSystem);
         
-        gameArea.addBlockGenerator(blockGenerator);
-        gameArea.addStoredBlock(storedBlock);
-        
+        //Thêm các lớp extends từ Jpanel vào khung cửa sổ Jfame
         this.add(gameArea);
         this.add(blockGenerator);
         this.add(storedBlock);
         this.add(speedAndLevelSystem);
         this.add(scoreAndTimeSystem);
         
-        //Khởi tạo luồng game
-        startGameThread();
+        //Cho gameArea tham chiếu đến các lớp cần thiết
+        gameArea.addBlockGenerator(blockGenerator);
+        gameArea.addStoredBlock(storedBlock);
+        gameArea.addGameThread(gameThread);
 
-        this.canRotate = true;
+        //Khởi tạo điều kiện điều khiển
+        this.canRotateClockWise = true;
+        this.canRotateCounterClockWise = true;
+        this.canRotate180 = true;
         this.canDrop = true;
         this.canStore = true;
         
@@ -107,51 +113,31 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        NewGameButton = new javax.swing.JButton();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tetris Project");
         setMinimumSize(new java.awt.Dimension(440, 480));
-
-        NewGameButton.setText("New Game");
-        NewGameButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        NewGameButton.setFocusPainted(false);
-        NewGameButton.setFocusable(false);
-        NewGameButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                NewGameButtonActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(52, 52, 52)
-                .addComponent(NewGameButton)
-                .addContainerGap(623, Short.MAX_VALUE))
+            .addGap(0, 762, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(85, 85, 85)
-                .addComponent(NewGameButton)
-                .addContainerGap(452, Short.MAX_VALUE))
+            .addGap(0, 560, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-//Hành động sẽ được thực hiện khi ấn nút new game
-    private void NewGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NewGameButtonActionPerformed
-        gameArea.newGame();
-        gameArea.createNewBlock();
-    }//GEN-LAST:event_NewGameButtonActionPerformed
-
+    //Thiết lập game Level
+    public void setGameLevel(int gameLevel) {
+        gameArea.setGameLevel(gameLevel);
+    }
+    
     //bắt đầu luồng game
     public void startGameThread() {
-        gameThread = new GameThread(gameArea,speedAndLevelSystem,scoreAndTimeSystem);
         gameThread.start();
     }
 
@@ -164,10 +150,23 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
-            if (canRotate) {
-                canRotate = false;
+        
+        if (key == KeyEvent.VK_SHIFT) {
+            if (canRotate180) {
+                canRotate180 = false;
+                gameArea.rotateBlock180();
+            }
+        }
+        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP || key==KeyEvent.VK_X) {
+            if (canRotateClockWise) {
+                canRotateClockWise = false;
                 gameArea.rotateBlockClockWise();
+            }
+        }
+        if (key==KeyEvent.VK_Z) {
+            if (canRotateCounterClockWise) {
+                canRotateCounterClockWise = false;
+                gameArea.rotateBlockCounterClockWise();
             }
         }
         if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) {
@@ -183,7 +182,6 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
             if (canDrop) {
                 canDrop = false;
                 gameArea.dropBlock();
-                gameThread.interrupt();
             }
         }
         if (key == KeyEvent.VK_C) {
@@ -199,8 +197,14 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
-        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) {
-            canRotate = true;
+        if (key == KeyEvent.VK_SHIFT) {
+            canRotate180 = true;
+        }
+        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP || key == KeyEvent.VK_X) {
+            canRotateClockWise = true;
+        }
+        if (key == KeyEvent.VK_Z) {
+            canRotateCounterClockWise = true;
         }
         if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) {
             canMoveLeft = false;
@@ -231,18 +235,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         }
     }
 
-    public static void main(String args[]) {
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GameForm().setVisible(true);
-            }
-        });
-    }
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton NewGameButton;
     // End of variables declaration//GEN-END:variables
 
     @Override
