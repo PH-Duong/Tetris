@@ -23,7 +23,7 @@ public class Tetris {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 gameForm = new GameForm();
-                startGame(1);
+                startGame(0);
             }
         });
     }

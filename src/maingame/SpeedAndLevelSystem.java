@@ -16,7 +16,7 @@ public class SpeedAndLevelSystem extends JPanel {
     //Toạ độ chữ
     private int textX,textY;
 
-    //Tốc độ theo tường level
+    //Tốc độ theo từng level
     private final int[] speedLevel = {1000,793,618,473,355,262,190,135,94,64,43,28,18,11,7};
     
     //Số hàng cần xoá để chuyển level

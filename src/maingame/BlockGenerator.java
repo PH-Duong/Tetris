@@ -26,6 +26,8 @@ public class BlockGenerator extends JPanel {
 
     //Để lấy khối gạch ở đầu đồng thời cho khối gạch khác vào cuối thì ta sử dụng hàng đợi
     private Queue<Block> nextBlocksQueue;
+    
+    private static final char[] blockSpawnRates = {'I','J','L','O','S','T','T','Z'};
 
     private Font font;
     
@@ -116,20 +118,20 @@ public class BlockGenerator extends JPanel {
     //Phương thức sinh ra một khối gạch bất kì
     public Block generateRandomBlock() {
         Random randomBlock = new Random();
-        switch (randomBlock.nextInt(7)) {
-            case 0:
+        switch (blockSpawnRates[randomBlock.nextInt(blockSpawnRates.length)]) {
+            case 'I':
                 return this.generateIBlock();
-            case 1:
+            case 'L':
                 return this.generateLBlock();
-            case 2:
+            case 'J':
                 return this.generateJBlock();
-            case 3:
+            case 'T':
                 return this.generateTBlock();
-            case 4:
+            case 'O':
                 return this.generateOBlock();
-            case 5:
+            case 'Z':
                 return this.generateZBlock();
-            case 6:
+            case 'S':
                 return this.generateSBlock();
 
             default:
