@@ -132,27 +132,6 @@ public class Block {
 
     }
 
-    //Kiểm tra xem có thể xuống được nữa không
-    //Ý tưởng ở đây là thử xuống 1 ô rồi kiểm tra va chạm
-    public boolean canMoveDown() {
-        y++;
-        if (checkCollision()) {
-            y--;
-            return false;
-        }
-        y--;
-        return true;
-    }
-
-    //Xuống 1 ô nếu có thể
-    public boolean moveDown() {
-        if (canMoveDown()) {
-            y++;
-            return true;
-        }
-        return false;
-    }
-
     //Kiểm tra va chạm
     private boolean checkCollision() {
         int BlockMatrixSize = getBlockMatrixSize();
@@ -196,8 +175,30 @@ public class Block {
         }
         return true;
     }
+    
+    //Kiểm tra xem có thể xuống được nữa không
+    //Ý tưởng ở đây là thử xuống 1 ô rồi kiểm tra va chạm
+    public boolean canMoveDown() {
+        y++;
+        if (checkCollision()) {
+            y--;
+            return false;
+        }
+        y--;
+        return true;
+    }
+
+    //Xuống 1 ô nếu có thể
+    public boolean moveDown() {
+        if (canMoveDown()) {
+            y++;
+            return true;
+        }
+        return false;
+    }
 
     //Thả khối xuống
+    @SuppressWarnings("empty-statement")
     public boolean drop() {
         while (moveDown());
         return true;
@@ -219,7 +220,7 @@ public class Block {
         currentBlockShapeIndex = (currentBlockShapeIndex + 1) % 4;
         blockShape = blockShapesList[currentBlockShapeIndex];
         
-        if (blockType == blockType.I_BLOCK) {
+        if (blockType == BLockType.I_BLOCK) {
             for (int i = 0; i < WALL_KICK_I_BLOCK[0].length; i++) {
                 x = previousX + WALL_KICK_I_BLOCK[previousBlockShapeIndex][i][0];
                 y = previousY - WALL_KICK_I_BLOCK[previousBlockShapeIndex][i][1];
@@ -263,7 +264,7 @@ public class Block {
 
         blockShape = blockShapesList[currentBlockShapeIndex];
 
-        if (blockType == blockType.I_BLOCK) {
+        if (blockType == BLockType.I_BLOCK) {
             for (int i = 0; i < WALL_KICK_I_BLOCK[0].length; i++) {
                 x = previousX - WALL_KICK_I_BLOCK[currentBlockShapeIndex][i][0];
                 y = previousY + WALL_KICK_I_BLOCK[currentBlockShapeIndex][i][1];
@@ -304,7 +305,7 @@ public class Block {
 
         blockShape = blockShapesList[currentBlockShapeIndex];
 
-        if (blockType == blockType.I_BLOCK) {
+        if (blockType == BLockType.I_BLOCK) {
             for (int i = 0; i < WALL_KICK_I_BLOCK_180[0].length; i++) {
                 x = previousX + WALL_KICK_I_BLOCK_180[currentBlockShapeIndex][i][0];
                 y = previousY - WALL_KICK_I_BLOCK_180[currentBlockShapeIndex][i][1];

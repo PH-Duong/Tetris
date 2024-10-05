@@ -1,13 +1,6 @@
 package maingame;
 
-import maingame.tetrisblocks.OBlock;
-import maingame.tetrisblocks.SBlock;
-import maingame.tetrisblocks.ZBlock;
-import maingame.tetrisblocks.IBlock;
-import maingame.tetrisblocks.JBlock;
-import maingame.tetrisblocks.TBlock;
-import maingame.tetrisblocks.GachNo;
-import maingame.tetrisblocks.LBlock;
+import maingame.tetrisblocks.*;
 import java.awt.Color;
 import java.awt.Font;
 

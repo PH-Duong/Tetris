@@ -211,6 +211,7 @@ public class GameArea extends JPanel {
             return true;
         }
         return false;
+        
     }
 
     //Xoay khối gạch theo chiều kim đồng hồ
@@ -393,6 +394,6 @@ public class GameArea extends JPanel {
     //Do gọi phương thức liên tục nên sẽ tạo ra hiệu ứng nháy trên màn hình
     public void startClearLinesEffect() {
         repaint();
-        clearLinesEffect.nextFrame();
+        clearLinesEffect.nextFrameColorIndex();
     }
 }

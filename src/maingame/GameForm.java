@@ -12,8 +12,6 @@ import javax.swing.Timer;
 //Đây là lớp được dùng để quản lý cửa sổ game
 //Lấy luồng điều khiển từ bàn phím
 //**************************************
-
-
 public class GameForm extends javax.swing.JFrame implements KeyListener {
 
     private GameForm gameForm;
@@ -23,7 +21,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     private BlockGenerator blockGenerator;
     private SpeedAndLevelSystem speedAndLevelSystem;
     private ScoreAndTimeSystem scoreAndTimeSystem;
-    
+
     //Luồng game
     private GameThread gameThread;
 
@@ -31,45 +29,44 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     private final int keyPressedDelay = 80;
 
     //Cho phép di chuyển hoặc không
-    private boolean canMoveLeft, canMoveRight, canMoveDown, canRotateClockWise, canRotateCounterClockWise, canRotate180,canDrop, canStore;
+    private boolean canMoveLeft, canMoveRight, canMoveDown, canRotateClockWise, canRotateCounterClockWise, canRotate180, canDrop, canStore;
 
-     //Phương thức khởi tạo
-    
+    //Phương thức khởi tạo
     public GameForm() {
         initComponents();
-        
+
         //Thêm ảnh vào Background của cửa sổ game
-         JLabel jl = null;
+        JLabel jl = null;
         try {
-            jl = new JLabel(new ImageIcon(ImageIO.read( new File("Test.jpg"))));
+            jl = new JLabel(new ImageIcon(ImageIO.read(new File("Test.jpg"))));
         } catch (IOException ex) {
             System.out.println("Lỗi tải ảnh");
         }
         this.setContentPane(jl);
-        
+
         //Thêm tính năng vào cửa sổ
         this.setAlwaysOnTop(true);
-        
+
         //Thêm chức năng di chuyển từ bàn phím
         addKeyListener(this);
 
         gameForm = this;
-        
+
         //Khởi tạo các lớp cần thiết
         gameArea = new GameArea();
         blockGenerator = new BlockGenerator();
         storedBlock = new HoldingBlock();
         speedAndLevelSystem = new SpeedAndLevelSystem();
         scoreAndTimeSystem = new ScoreAndTimeSystem();
-        gameThread = new GameThread(gameArea,speedAndLevelSystem,scoreAndTimeSystem);
-        
+        gameThread = new GameThread(gameArea, speedAndLevelSystem, scoreAndTimeSystem);
+
         //Thêm các lớp extends từ Jpanel vào khung cửa sổ Jfame
         this.add(gameArea);
         this.add(blockGenerator);
         this.add(storedBlock);
         this.add(speedAndLevelSystem);
         this.add(scoreAndTimeSystem);
-        
+
         //Cho gameArea tham chiếu đến các lớp cần thiết
         gameArea.addBlockGenerator(blockGenerator);
         gameArea.addStoredBlock(storedBlock);
@@ -81,7 +78,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         this.canRotate180 = true;
         this.canDrop = true;
         this.canStore = true;
-        
+
         //Lắng nghe thay đổi cửa sổ
         //Nếu có thay đổi thì cập nhật lại thông số cho các cửa sổ con bên trong
         this.addComponentListener(new ComponentAdapter() {
@@ -93,20 +90,19 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
                 speedAndLevelSystem.updateAreaSize(gameArea.getBounds());
                 scoreAndTimeSystem.updateAreaSize(gameArea.getBounds());
             }
-            
+
         });
-        
+
         //***********
         //Phần này sẽ kiểm tra luồng từ bàn phím sau mỗi (keyPressedDelay) thời gian
         //Và được lặp lại sau mỗi (keyPressedDelay) thời gian
         //***********
-        
         Timer timer = new Timer(keyPressedDelay, event -> {
             moveBlock();
         });
         timer.setRepeats(true);
         timer.start();  // Bắt đầu đếm ngược
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -135,7 +131,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     public void setGameLevel(int gameLevel) {
         gameArea.setGameLevel(gameLevel);
     }
-    
+
     //bắt đầu luồng game
     public void startGameThread() {
         gameThread.start();
@@ -146,24 +142,23 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
     //Đối với xoay khối gạch và thả khối gạch thì chỉ được thực hiện 1 lần mỗi lần ấn
     //tức 1 lần ấn và thả chỉ tính 1 lần, còn sang trái,phải,xuống thì cho phép giữ
     //*******************************
-    
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        
+
         if (key == KeyEvent.VK_SHIFT) {
             if (canRotate180) {
                 canRotate180 = false;
                 gameArea.rotateBlock180();
             }
         }
-        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP || key==KeyEvent.VK_X) {
+        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP || key == KeyEvent.VK_X) {
             if (canRotateClockWise) {
                 canRotateClockWise = false;
                 gameArea.rotateBlockClockWise();
             }
         }
-        if (key==KeyEvent.VK_Z) {
+        if (key == KeyEvent.VK_Z) {
             if (canRotateCounterClockWise) {
                 canRotateCounterClockWise = false;
                 gameArea.rotateBlockCounterClockWise();
@@ -193,7 +188,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
             }
         }
     }
-    
+
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
@@ -237,7 +232,6 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-
     @Override
     public void keyTyped(KeyEvent e) {
     }
