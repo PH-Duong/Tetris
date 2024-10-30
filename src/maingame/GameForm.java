@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.Timer;
+import tetris.Tetris;
 
 //**************************************
 //Đây là lớp được dùng để quản lý cửa sổ game
@@ -42,7 +43,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         } catch (IOException ex) {
             System.out.println("Lỗi tải ảnh");
         }
-        this.setContentPane(jl);
+        this.setContentPane(jl);    //phủ kín màn hình bằng ảnh nền
 
         //Thêm tính năng vào cửa sổ
         this.setAlwaysOnTop(true);
@@ -134,6 +135,10 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
 
     //bắt đầu luồng game
     public void startGameThread() {
+        gameThread.setExitGame();
+        gameThread.interrupt();
+        gameThread = new GameThread(gameArea, speedAndLevelSystem, scoreAndTimeSystem);
+        gameArea.addGameThread(gameThread);
         gameThread.start();
     }
 
@@ -186,6 +191,13 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
                     gameThread.interrupt();
                 }
             }
+        }
+
+        //ESC để quay trở lại menu
+        if (key == KeyEvent.VK_ESCAPE) {
+            Tetris.showMenu();
+            gameThread.setExitGame();
+            gameThread.interrupt();
         }
     }
 
