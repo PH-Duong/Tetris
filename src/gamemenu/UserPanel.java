@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import tetris.Tetris;
 
 public class UserPanel extends JPanel {
 
@@ -12,7 +13,7 @@ public class UserPanel extends JPanel {
     private int borderThickness;
     private Color color;
     private boolean bellOn;
-
+    
     public UserPanel(Dimension d, String userName, int userScore) {
         this.setPreferredSize(d);
         this.setLayout(null);
@@ -42,7 +43,7 @@ public class UserPanel extends JPanel {
 
         bellOn = true;
         JLabel bell = new JLabel();
-        ImageIcon bellOnIcon = new ImageIcon("bellon.png");
+        ImageIcon bellOnIcon = new ImageIcon("Icon\\bellon.png");
         bell.setIcon(new ImageIcon(bellOnIcon.getImage().getScaledInstance(bellOnIcon.getIconWidth(), bellOnIcon.getIconHeight(), Image.SCALE_DEFAULT)));
         JPanel testp = new JPanel();
         testp.setBounds((int) (user.getX() - user.getHeight() * 1.08), user.getY(), user.getHeight(), user.getHeight());
@@ -57,11 +58,13 @@ public class UserPanel extends JPanel {
             public void mousePressed(MouseEvent e) {
                 if (bellOn) {
                     bellOn = false;
-                    ImageIcon bellOnIcon = new ImageIcon("belloff.png");
+                    Tetris.stopBackGroundMusic();
+                    ImageIcon bellOnIcon = new ImageIcon("Icon\\belloff.png");
                     bell.setIcon(new ImageIcon(bellOnIcon.getImage().getScaledInstance(bellOnIcon.getIconWidth(), bellOnIcon.getIconHeight(), Image.SCALE_DEFAULT)));
                 } else {
                     bellOn = true;
-                    ImageIcon bellOnIcon = new ImageIcon("bellon.png");
+                    Tetris.startBackGroundMusic();
+                    ImageIcon bellOnIcon = new ImageIcon("Icon\\bellon.png");
                     bell.setIcon(new ImageIcon(bellOnIcon.getImage().getScaledInstance(bellOnIcon.getIconWidth(), bellOnIcon.getIconHeight(), Image.SCALE_DEFAULT)));
                 }
             }

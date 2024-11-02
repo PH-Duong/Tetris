@@ -46,8 +46,8 @@ public class CustomButton extends JButton {
             Dimension size = this.getSize();
             Point p = this.getLocation();
             if (size.width < max) {
-                this.setSize(size.width + step*step, size.height);
-                this.setLocation(p.x - step*step, p.y);
+                this.setSize(size.width + step * step, size.height);
+                this.setLocation(p.x - step * step, p.y);
                 repaint();
             } else {
                 out.stop();
@@ -59,8 +59,8 @@ public class CustomButton extends JButton {
             Dimension size = this.getSize();
             Point p = this.getLocation();
             if (size.width > min) {
-                this.setSize(size.width - step*step, size.height);
-                this.setLocation(p.x + step*step, p.y);
+                this.setSize(size.width - step * step, size.height);
+                this.setLocation(p.x + step * step, p.y);
                 repaint();
             } else {
                 in.stop();
@@ -68,8 +68,6 @@ public class CustomButton extends JButton {
             }
         });
 
-        System.out.println(in.isCoalesce());
-        
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {

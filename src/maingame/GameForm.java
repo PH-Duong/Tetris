@@ -39,7 +39,7 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         //Thêm ảnh vào Background của cửa sổ game
         JLabel jl = null;
         try {
-            jl = new JLabel(new ImageIcon(ImageIO.read(new File("Test.jpg"))));
+            jl = new JLabel(new ImageIcon(ImageIO.read(new File("Icon\\background.jpg"))));
         } catch (IOException ex) {
             System.out.println("Lỗi tải ảnh");
         }

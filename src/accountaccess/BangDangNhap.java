@@ -4,14 +4,17 @@ import java.sql.*;
 
 public class BangDangNhap {
 
-    public static void main(String[] args) {
-        String url = "jdbc:mysql://sql12.freesqldatabase.com:3306/sql12727727";
-        String username = "sql12727727";
-        String password = "V6ldaGqBZT";
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
+        String url = "jdbc:mysql://sql.freedb.tech:3306/freedb_Tetris";
+        String username = "freedb_user1";
+        String password = "qN?825jv2yzPBnc";
 
         String tenDangNhap = "new_user";
         String matKhauDangNhap = "userpassword";
         try (Connection LuongKetNoiCSDL = DriverManager.getConnection(url, username, password)) {
+            System.out.println("KET NOI THANH CONG");
             String mauTruyVan = "SELECT password FROM Users WHERE username = ?";
             PreparedStatement lenhTuyVanChuanBi = LuongKetNoiCSDL.prepareStatement(mauTruyVan);
             lenhTuyVanChuanBi.setString(1, tenDangNhap);
@@ -28,7 +31,7 @@ public class BangDangNhap {
                 System.out.println("Tài khoản không tồn tại!");
             }
         } catch (SQLException e) {
-            System.out.println("Không thể kết nối tới CSLD");
+            System.out.println(e.getMessage());
         }
     }
 }

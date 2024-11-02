@@ -207,7 +207,8 @@ public class GameArea extends JPanel {
         if (block.drop()) {
             dropBlockEffect.setDrop();  //Hiệu ứng thả gạch
             embedBlockIntoMatrix(); //Cho khối gạch vào ma trận nền
-            repaint();
+            repaint(); 
+            Tetris.playBlockdown();
             return true;
         }
         return false;
@@ -221,6 +222,7 @@ public class GameArea extends JPanel {
         }
         if (block.rotateClockWise()) {
             repaint();
+            Tetris.playRotateblock();
         }
     }
 
@@ -231,6 +233,7 @@ public class GameArea extends JPanel {
         }
         if (block.rotateCounterClockWise()) {
             repaint();
+            Tetris.playRotateblock();
         }
     }
     
@@ -241,6 +244,7 @@ public class GameArea extends JPanel {
         }
         if (block.rotate180()) {
             repaint();
+            Tetris.playRotateblock();
         }
     }
 
@@ -263,6 +267,9 @@ public class GameArea extends JPanel {
 
         if (t == 4) {
             clearLinesEffect.setIs4Line(true);
+        }
+        if (t!=0) {
+            Tetris.playClear();
         }
         return t;
     }
