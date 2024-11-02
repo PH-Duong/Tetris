@@ -26,10 +26,6 @@ public class AudioBackground {
     public void start() {
         clip.setFramePosition(0);  // Đặt lại vị trí phát từ đầu
         clip.start();
-        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        // Chuyển đổi âm lượng từ phần trăm sang decibel
-        float dB = (float) (Math.log(0.5f) / Math.log(10) * 20);
-        gainControl.setValue(dB);
         clip.loop(Clip.LOOP_CONTINUOUSLY);  // Lặp vô tận để phát nhạc nền
     }
     public void stop() {
