@@ -16,7 +16,7 @@ public class ScoreAndTimeSystem extends JPanel {
     private int textX,textY;
     
     //Điểm số
-    private long score;
+    private int score;
     
     //Thời gian chơi game
     private int startMinutes,startSeconds;
@@ -51,7 +51,7 @@ public class ScoreAndTimeSystem extends JPanel {
     //Cập nhật kích thước và vị trí khi cửa sổ chương trình thay đổi kích thước
     //Ý tưởng:****************
     //Tương tự với HoldingBlock
-    void updateAreaSize(Rectangle gameAreaSize) {
+    public void updateAreaSize(Rectangle gameAreaSize) {
 
         //Xác định dài, rộng của khung
         int scoreAndTimeSystemHeight = (int) (gameAreaSize.height * 0.26);
@@ -118,5 +118,9 @@ public class ScoreAndTimeSystem extends JPanel {
         this.startMinutes = 0;
         this.startSeconds = 0;
         repaint();
+    }
+
+    public int getScore() {
+        return score;
     }
 }

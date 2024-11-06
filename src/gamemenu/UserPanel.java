@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import loginandsignup.Player;
 import tetris.Tetris;
 
 public class UserPanel extends JPanel {
@@ -13,10 +14,12 @@ public class UserPanel extends JPanel {
     private int borderThickness;
     private Color color;
     private boolean bellOn;
-    
-    public UserPanel(Dimension d, String userName, int userScore) {
+    private Player player;
+
+    public UserPanel(Dimension d, Player player) {
         this.setPreferredSize(d);
         this.setLayout(null);
+        this.player = player;
 
         borderThickness = (int) (d.getHeight() * 0.01);
         color = new Color(31, 33, 38);
@@ -31,11 +34,8 @@ public class UserPanel extends JPanel {
         user.setBounds((int) (d.getWidth() * 0.8), 0, (int) (d.getWidth() * 0.18), (int) (d.getHeight() * 0.9));
         user.setBorder(new MatteBorder(3, 3, 3, 3, color.darker()));
         user.setBackground(color.darker());
-
-        user.setContentType("text/html");
-        user.setText("<html><p style='margin-top: 3mm; margin-right: 0mm; margin-bottom: 0mm; font-size: 11pt; font-family: \"Calibri\", sans-serif; line-height: 0.8;'><span style=\"font-size: 15px; font-family: Helvetica; color: rgb(239, 239, 239);\">&nbsp;" + userName + "</span></p>\n"
-                + "<p style='margin: 0mm; font-size: 11pt; font-family: \"Calibri\", sans-serif; line-height: 0.4;'><span style=\"font-size: 12px; font-family: Helvetica; color: rgb(239, 239, 239);\">&nbsp; Best Score: " + userScore + "</span></p></html>");
         this.add(user);
+        this.updatePlayerInfo();
 
         JLabel mainMenuText = new JLabel("<html><p style='margin-top: mm; margin-right: 0mm; margin-bottom: 0mm; font-size: 11pt; font-family: \"Calibri\", sans-serif; line-height: 0.3;'><span style=\"font-size: 32px; font-family: Helvetica; color: rgb(116, 125, 153);\">MAIN MENU<br></span></p></html>");
         this.add(mainMenuText);
@@ -45,15 +45,16 @@ public class UserPanel extends JPanel {
         JLabel bell = new JLabel();
         ImageIcon bellOnIcon = new ImageIcon("Icon\\bellon.png");
         bell.setIcon(new ImageIcon(bellOnIcon.getImage().getScaledInstance(bellOnIcon.getIconWidth(), bellOnIcon.getIconHeight(), Image.SCALE_DEFAULT)));
-        JPanel testp = new JPanel();
-        testp.setBounds((int) (user.getX() - user.getHeight() * 1.08), user.getY(), user.getHeight(), user.getHeight());
-        testp.add(bell);
-        testp.setLayout(null);
-        bell.setBounds(15, 4, testp.getWidth(), testp.getHeight());
-        testp.setBackground(color.darker());
-        this.add(testp);
+        
+        JPanel bellButton = new JPanel();
+        bellButton.setBounds((int) (user.getX() - user.getHeight() * 1.08), user.getY(), user.getHeight(), user.getHeight());
+        bellButton.add(bell);
+        bellButton.setLayout(null);
+        bell.setBounds(15, 4, bellButton.getWidth(), bellButton.getHeight());
+        bellButton.setBackground(color.darker());
+        this.add(bellButton);
 
-        testp.addMouseListener(new MouseAdapter() {
+        bellButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (bellOn) {
@@ -69,7 +70,11 @@ public class UserPanel extends JPanel {
                 }
             }
         });
-
     }
-
+    
+    public void updatePlayerInfo() {
+        user.setContentType("text/html");
+        user.setText("<html><p style='margin-top: 3mm; margin-right: 0mm; margin-bottom: 0mm; font-size: 11pt; font-family: \"Calibri\", sans-serif; line-height: 0.8;'><span style=\"font-size: 15px; font-family: Helvetica; color: rgb(239, 239, 239);\">&nbsp;" + player.getUsername() + "</span></p>\n"
+                + "<p style='margin: 0mm; font-size: 11pt; font-family: \"Calibri\", sans-serif; line-height: 0.4;'><span style=\"font-size: 12px; font-family: Helvetica; color: rgb(239, 239, 239);\">&nbsp; Best Score: " + player.getScore() + "</span></p></html>");
+    }
 }

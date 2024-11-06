@@ -131,6 +131,8 @@ public class GameArea extends JPanel {
             return false;
         }
         block = storedBlock.holdOrSwapBlock(block);
+        Tetris.playHoldblockSoundEffect();
+        
         if (block == null) {
             createNewBlock();
         } else {
@@ -208,7 +210,7 @@ public class GameArea extends JPanel {
             dropBlockEffect.setDrop();  //Hiệu ứng thả gạch
             embedBlockIntoMatrix(); //Cho khối gạch vào ma trận nền
             repaint(); 
-            Tetris.playBlockdown();
+            Tetris.playBlockdownSoundEffect();
             return true;
         }
         return false;
@@ -222,7 +224,7 @@ public class GameArea extends JPanel {
         }
         if (block.rotateClockWise()) {
             repaint();
-            Tetris.playRotateblock();
+            Tetris.playRotateblockSoundEffect();
         }
     }
 
@@ -233,7 +235,7 @@ public class GameArea extends JPanel {
         }
         if (block.rotateCounterClockWise()) {
             repaint();
-            Tetris.playRotateblock();
+            Tetris.playRotateblockSoundEffect();
         }
     }
     
@@ -244,7 +246,7 @@ public class GameArea extends JPanel {
         }
         if (block.rotate180()) {
             repaint();
-            Tetris.playRotateblock();
+            Tetris.playRotateblockSoundEffect();
         }
     }
 
@@ -269,7 +271,7 @@ public class GameArea extends JPanel {
             clearLinesEffect.setIs4Line(true);
         }
         if (t!=0) {
-            Tetris.playClear();
+            Tetris.playClearSoundEffect();
         }
         return t;
     }

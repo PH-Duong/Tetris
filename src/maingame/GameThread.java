@@ -1,6 +1,9 @@
 package maingame;
 
 //**************************************
+
+import tetris.Tetris;
+
 //Đây là lớp được dùng để di chuyển khối gạch xuống sau khoản thời gian nhất định
 //**************************************
 public class GameThread extends Thread {
@@ -29,6 +32,7 @@ public class GameThread extends Thread {
 
     //Khởi tạo game mới
     public void newGame() {
+        Tetris.updatePlayerScore(scoreAndTimeSystem.getScore());
         gameArea.newGame();
         speedAndLevelSystem.newGame();
         scoreAndTimeSystem.newGame();
@@ -36,6 +40,7 @@ public class GameThread extends Thread {
     }
 
     public void setExitGame() {
+        Tetris.updatePlayerScore(scoreAndTimeSystem.getScore());;
         exited = true;
     }
 
@@ -84,7 +89,6 @@ public class GameThread extends Thread {
             //Sau mỗi lần di chuyển 1 ô thì nghỉ gameSpeed thời gian
             while (gameArea.moveBlockDown()) {
                 try {
-                    System.out.println("GameThreadRun");
                     Thread.sleep(gameSpeed);
                 } catch (InterruptedException ex) {
                     if (exited) {

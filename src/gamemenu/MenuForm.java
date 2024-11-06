@@ -1,14 +1,17 @@
 package gamemenu;
 
 import java.awt.*;
+import loginandsignup.Player;
 
 public class MenuForm extends javax.swing.JFrame {
-
-    public MenuForm(Rectangle bounds) {
+    private MainScreen mainScreen;
+    private UserPanel userPanel;
+    
+    public MenuForm(Rectangle bounds, Player player) {
         initComponents();
         this.setBounds(bounds);
-        MainScreen mainScreen = new MainScreen(new Dimension(bounds.width, bounds.width / 2));  //Đây chính là menu chính, cho nó vào center
-        UserPanel userPanel = new UserPanel(new Dimension(bounds.width, bounds.height - bounds.width / 2), "HELI", 12312);
+        mainScreen = new MainScreen(new Dimension(bounds.width, bounds.width / 2));  //Đây chính là menu chính, cho nó vào center
+        userPanel = new UserPanel(new Dimension(bounds.width, bounds.height - bounds.width / 2), player);
         this.setLayout(new BorderLayout());
         this.add(BorderLayout.CENTER, mainScreen);
         this.add(BorderLayout.NORTH, userPanel);
@@ -34,6 +37,10 @@ public class MenuForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    public void refreshBestScore() {
+        userPanel.updatePlayerInfo();
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -14,8 +14,10 @@ public class AudioPlayer extends Thread {
     private String clearLinePath = soundsFolder + "clear.wav";
     private String blockdownPath = soundsFolder + "blockdown.wav";
     private String rotateblockPath = soundsFolder + "rotateblock.wav";
+    private String holdblockPath = soundsFolder + "holdblock.wav";
+    
 
-    private Clip clearLineSound, gameoverSound, blockdownSound, rotateblockSound;
+    private Clip clearLineSound, gameoverSound, blockdownSound, rotateblockSound, holdblockSound;
 
     public AudioPlayer() {
         try {
@@ -23,11 +25,14 @@ public class AudioPlayer extends Thread {
             clearLineSound = AudioSystem.getClip();
             blockdownSound = AudioSystem.getClip();
             rotateblockSound = AudioSystem.getClip();
+            holdblockSound = AudioSystem.getClip();
 
             // Mở các tệp âm thanh
             clearLineSound.open(AudioSystem.getAudioInputStream(new File(clearLinePath).getAbsoluteFile()));           
             blockdownSound.open(AudioSystem.getAudioInputStream(new File(blockdownPath).getAbsoluteFile()));
             rotateblockSound.open(AudioSystem.getAudioInputStream(new File(rotateblockPath).getAbsoluteFile()));
+            holdblockSound.open(AudioSystem.getAudioInputStream(new File(holdblockPath).getAbsoluteFile()));
+            
         } catch (LineUnavailableException | UnsupportedAudioFileException | IOException ex) {
             Logger.getLogger(AudioPlayer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -57,6 +62,11 @@ public class AudioPlayer extends Thread {
 
     // Phát âm thanh rotate block
     public void playRotateBlock() {
+        playSound(rotateblockSound);
+    }
+
+    // Phát âm thanh hold block
+    public void playHoldBlock() {
         playSound(rotateblockSound);
     }
 }

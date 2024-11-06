@@ -6,7 +6,6 @@ import javax.swing.*;
 import tetris.Tetris;
 
 public class MainScreen extends JPanel {
-
     private int buttonX, buttonY, buttonW, buttonH, buttonGap, fontSize;
     private Leaderboard leaderboard;
 
@@ -64,7 +63,7 @@ public class MainScreen extends JPanel {
             }
         });
     }
-
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
