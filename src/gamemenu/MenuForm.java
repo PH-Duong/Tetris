@@ -10,8 +10,8 @@ public class MenuForm extends javax.swing.JFrame {
     public MenuForm(Rectangle bounds, Player player) {
         initComponents();
         this.setBounds(bounds);
-        mainScreen = new MainScreen(new Dimension(bounds.width, bounds.width / 2));  //Đây chính là menu chính, cho nó vào center
-        userPanel = new UserPanel(new Dimension(bounds.width, bounds.height - bounds.width / 2), player);
+        mainScreen = new MainScreen(new Dimension(bounds.width, bounds.width / 2));  //Menu chính
+        userPanel = new UserPanel(new Dimension(bounds.width, bounds.height - bounds.width / 2), player);   //Thanh người chươi
         this.setLayout(new BorderLayout());
         this.add(BorderLayout.CENTER, mainScreen);
         this.add(BorderLayout.NORTH, userPanel);

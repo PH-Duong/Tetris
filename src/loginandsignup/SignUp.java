@@ -71,6 +71,7 @@ public class SignUp extends JFrame {
         signUpBtn = new JButton("Sign Up");
         signUpBtn.setBounds(200, 280, 90, 30);
         signUpBtn.setBackground(Color.GREEN);
+        signUpBtn.setFocusable(false);
         signUpBtn.addActionListener(evt -> handleSignUp());
         BGPanel.add(signUpBtn);
 
@@ -78,6 +79,7 @@ public class SignUp extends JFrame {
         loginBtn = new JButton("Login");
         loginBtn.setBounds(310, 280, 90, 30);
         loginBtn.setBackground(Color.RED);
+        loginBtn.setFocusable(false);
         loginBtn.addActionListener(evt -> handleLogin());
         BGPanel.add(loginBtn);
     }

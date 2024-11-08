@@ -1,7 +1,7 @@
 package tetris;
 
-import SoundGame.AudioPlayer;
-import Soundgame.AudioBackground;
+import soundgame.AudioPlayer;
+import soundgame.AudioBackground;
 import gamemenu.MenuForm;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class Tetris {
             menuForm.setBounds(currentBonds);
         }
         menuForm.setVisible(true);
-        gameForm.setVisible(false);
+        gameForm.dispose();
     }
 
     public static void onLoginSuccess(Player playerx, boolean isOnlnex) {
@@ -56,7 +56,6 @@ public class Tetris {
             player.setScore(score);
             if (isOnline) {
                 loginManager.updateScore(player);
-
             }
         }
         menuForm.refreshBestScore();
@@ -92,6 +91,11 @@ public class Tetris {
     public static void stopBackGroundMusic() {
         audioBackground.stop();
     }
+    
+    public static void logout() {
+        menuForm.dispose();
+        loginManager = new LoginManager();
+    }
 
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -102,6 +106,7 @@ public class Tetris {
                 audio = new AudioPlayer();
                 startBackGroundMusic();
                 loginManager = new LoginManager();
+                gameForm.setResizable(false);
             }
         });
     }

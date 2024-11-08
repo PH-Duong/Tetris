@@ -59,8 +59,8 @@ public class CustomButton extends JButton {
             Dimension size = this.getSize();
             Point p = this.getLocation();
             if (size.width > min) {
-                this.setSize(size.width - step * step, size.height);
-                this.setLocation(p.x + step * step, p.y);
+                this.setSize(size.width - step*3, size.height);
+                this.setLocation(p.x + step*3, p.y);
                 repaint();
             } else {
                 in.stop();

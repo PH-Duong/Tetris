@@ -7,12 +7,12 @@ import maingame.BLockType;
 public class SBlock extends Block {
 
     public static final Color BLOCK_COLOR=new Color(130 , 179, 49);
-
-    public SBlock() {
-        int[][] blockShape = {{0,1,1},
+    public static final int[][] BLOCK_SHAPE = {{0,1,1},
                             {1,1,0},
                             {0,0,0}};
-        super(blockShape,BLOCK_COLOR,4,-2,BLockType.NORMAL_BLOCK);
+
+    public SBlock() {
+        super(BLOCK_SHAPE,BLOCK_COLOR,4,-2,BLockType.NORMAL_BLOCK);
     }
     
 }

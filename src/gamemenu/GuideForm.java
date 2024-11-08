@@ -14,5 +14,6 @@ public class GuideForm extends JFrame {
 
         setContentPane(guidePhoto);
         setBounds(0, 0, photo.getIconWidth(), photo.getIconHeight());
+        this.setResizable(false);
     }
 }

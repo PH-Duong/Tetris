@@ -63,12 +63,14 @@ public class Login extends JFrame {
         btnOK = new JButton("OK");
         btnOK.setBounds(190, 240, 180, 30);
         btnOK.setBackground(Color.GREEN);
+        btnOK.setFocusable(false);
         btnOK.addActionListener(evt -> handleLogin());
         panel.add(btnOK);
 
         // Nút Back
         btnCancel = new JButton("Back");
         btnCancel.setBounds(20, 30, 70, 30);
+        btnCancel.setFocusable(false);
         btnCancel.addActionListener(e -> handleBack());
         panel.add(btnCancel);
 
@@ -82,6 +84,7 @@ public class Login extends JFrame {
         btnSignup.setBounds(240, 290, 80, 30);
         btnSignup.setForeground(Color.WHITE);
         btnSignup.setBackground(new Color(70, 130, 180));
+        btnSignup.setFocusable(false);
         btnSignup.addActionListener(e -> handleSignup());
         panel.add(btnSignup);
     }

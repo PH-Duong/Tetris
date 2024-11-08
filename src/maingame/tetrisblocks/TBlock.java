@@ -7,12 +7,12 @@ import maingame.BLockType;
 public class TBlock extends Block {
     
     public static final Color BLOCK_COLOR=new Color(205 , 58, 191);
-
-    public TBlock() {
-        int[][] blockShape = {{0,1,0},
+    public static final int[][] BLOCK_SHAPE = {{0,1,0},
                             {1,1,1},
                             {0,0,0}};
-        super(blockShape,BLOCK_COLOR,4,-2,BLockType.NORMAL_BLOCK);
+
+    public TBlock() {
+        super(BLOCK_SHAPE,BLOCK_COLOR,4,-2,BLockType.NORMAL_BLOCK);
     }
     
 }

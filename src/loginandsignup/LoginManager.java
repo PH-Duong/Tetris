@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class LoginManager extends JFrame {
     private BackgroundPanel BGHome;
-    private JButton Online, Offline, Ranking;
+    private JButton Online, Offline, exit;
     private JLabel iconLb, title;
     private DataBaseManager cnt;
 
@@ -16,7 +16,7 @@ public class LoginManager extends JFrame {
 
         this.add(BGHome);
 
-        this.setTitle("Home");
+        this.setTitle("Đăng Nhập");
         this.setSize(500, 474);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -43,6 +43,7 @@ public class LoginManager extends JFrame {
         Online.setBounds(130, 170, 240, 37);
         Online.setBackground(new Color(255, 165, 0));
         Online.setForeground(Color.BLACK);
+        Online.setFocusable(false);
         Online.addActionListener(e -> handleLogin());
         BGHome.add(Online);
 
@@ -51,15 +52,18 @@ public class LoginManager extends JFrame {
         Offline.setBounds(130, 240, 240, 37);
         Offline.setBackground(new Color(255, 165, 0));
         Offline.setForeground(Color.BLACK);
+        Offline.setFocusable(false);
         Offline.addActionListener(e -> handleOffline());
         BGHome.add(Offline);
 
         //rank
-        Ranking = new JButton("RANKING");
-        Ranking.setBounds(130, 310, 240, 37);
-        Ranking.setBackground(new Color(255, 165, 0));
-        Ranking.setForeground(Color.BLACK);
-        BGHome.add(Ranking);
+        exit = new JButton("EXIT");
+        exit.setBounds(130, 310, 240, 37);
+        exit.setBackground(new Color(255, 165, 0));
+        exit.setForeground(Color.BLACK);
+        exit.setFocusable(false);
+        exit.addActionListener(e -> handleExit());
+        BGHome.add(exit);
     }
 
     private void handleLogin(){
@@ -70,6 +74,10 @@ public class LoginManager extends JFrame {
     private void handleOffline(){
         new OfflineMode(this);
         this.dispose();
+    }
+    
+    private void handleExit(){
+        System.exit(0);
     }
     
     public void updateScore(Player player) {

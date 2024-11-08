@@ -45,9 +45,6 @@ public class GameForm extends javax.swing.JFrame implements KeyListener {
         }
         this.setContentPane(jl);    //phủ kín màn hình bằng ảnh nền
 
-        //Thêm tính năng vào cửa sổ
-        this.setAlwaysOnTop(true);
-
         //Thêm chức năng di chuyển từ bàn phím
         addKeyListener(this);
 

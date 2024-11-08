@@ -46,11 +46,13 @@ public class OfflineMode extends JFrame {
         jbOk.setBackground(Color.GREEN);
         jbOk.setForeground(Color.BLACK);
         jbOk.setBounds(200,275,100,30);
+        jbOk.setFocusable(false);
         jbOk.addActionListener(e -> handleOK());
         BGOffline.add(jbOk);
 
         jbBack = new JButton("Back");
         jbBack.setBounds(20, 30, 70, 30);
+        jbBack.setFocusable(false);
         jbBack.addActionListener(e -> handleBack());
         BGOffline.add(jbBack);
     }
