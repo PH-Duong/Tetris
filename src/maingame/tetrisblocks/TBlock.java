@@ -14,5 +14,4 @@ public class TBlock extends Block {
     public TBlock() {
         super(BLOCK_SHAPE,BLOCK_COLOR,4,-2,BLockType.NORMAL_BLOCK);
     }
-    
 }

@@ -33,7 +33,6 @@ public class Block {
         {{0, 0}, {2, 0}, {-1, 0}, {2, 1}, {-1, -2}}, //2->3
         {{0, 0}, {1, 0}, {-2, 0}, {1, -2}, {-2, 1}} //3->4
     };
-
     private static final int[][][] WALL_KICK_I_BLOCK_180 = {
         {{0, 0}, {-1, 0}, {-2, 0}, {1, 0}, {2, 0}, {0, 1}}, // 0>>2─┐
         {{0, 0}, {0, 1}, {0, 2}, {0, -1}, {0, -2}, {-1, 0}}, // 1>>3─┼┐
@@ -90,6 +89,7 @@ public class Block {
     }
 
     //phương thức vẽ ô gạch
+    //phải để static bởi nếu không thì block trên nền sẽ phải là đối tượng riêng với từng khối bởi nó có màu khác nhau
     public static void drawBlockCells(Graphics g, int x, int y, int blockCellSize, Color cellColor) {
 
         //Tạo tam giác trái của hình vuông
