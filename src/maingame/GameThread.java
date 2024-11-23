@@ -2,6 +2,8 @@ package maingame;
 
 //**************************************
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import tetris.Tetris;
 
 //Đây là lớp được dùng để di chuyển khối gạch xuống sau khoản thời gian nhất định
@@ -37,10 +39,15 @@ public class GameThread extends Thread {
         speedAndLevelSystem.newGame();
         scoreAndTimeSystem.newGame();
         this.gameSpeed = 1000;
+
+        //Nếu là chế độ luyện tập thì để gameSpeed là 100000ms
+        if (this.gameArea.getGameLevel()>0) {
+            this.gameSpeed = 100000;
+        }
     }
 
     public void setExitGame() {
-        Tetris.updatePlayerScore(scoreAndTimeSystem.getScore());;
+        Tetris.updatePlayerScore(scoreAndTimeSystem.getScore());
         exited = true;
     }
 
@@ -72,8 +79,20 @@ public class GameThread extends Thread {
                 gameSpeed = speedAndLevelSystem.addLinesAndCheckNextLevel(FullLinesNum);
                 scoreAndTimeSystem.addPointsForClearLines(FullLinesNum, speedAndLevelSystem.getLevel());
             }
-
+            
+            //Kiểm tra xem game đã kết thúc chưa
             if (gameArea.checkGameOver()) {
+                //Nếu là chơi thường thì sẽ hiện gameOver nếu không thì thôi
+                if (gameArea.getGameLevel()==0) {
+                    gameArea.showGameOverPanel(scoreAndTimeSystem.getScore());
+                    try {
+                        scoreAndTimeSystem.stopTime();
+                        Thread.sleep(3600000);
+                    } catch (InterruptedException ex) {
+                    }
+                }
+                
+                //Tạo mới game
                 this.newGame();
             }
 

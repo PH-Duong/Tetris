@@ -24,6 +24,9 @@ public class ScoreAndTimeSystem extends JPanel {
     //Định dạng điểm (VD 1000 -> 1,000)
     private DecimalFormat scoreFormat;
     
+    //Bộ đếm thời gian
+    Timer gameTimer;
+    
     
     public ScoreAndTimeSystem() {
         this.setOpaque(false);
@@ -34,7 +37,7 @@ public class ScoreAndTimeSystem extends JPanel {
         this.font = new Font("Calibri", Font.BOLD, 16);
         
         //Bộ đếm thời gian chơi game
-        Timer gameTimer = new Timer(1000, e -> {
+        gameTimer = new Timer(1000, e -> {
             this.startSeconds++;
             if (this.startSeconds==61) {
                 this.startMinutes++;
@@ -46,6 +49,10 @@ public class ScoreAndTimeSystem extends JPanel {
         gameTimer.start();
         
         scoreFormat = new DecimalFormat("###,###");
+    }
+    
+    public void stopTime() {
+        gameTimer.stop();
     }
     
     //Cập nhật kích thước và vị trí khi cửa sổ chương trình thay đổi kích thước

@@ -3,6 +3,7 @@ package maingame;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalTime;
 import java.util.Scanner;
 
 //******
@@ -28,11 +29,12 @@ public class LevelMatrix {
         try {
             
             String levelFilePatch = String.format("Tetris Level Map/Level_%d.txt", level);
+            System.out.println(level+".txt | now ="+LocalTime.now());
             levelFile = new File(levelFilePatch);
             sc = new Scanner(levelFile);
             
         } catch (FileNotFoundException ex) {
-            System.out.println("KHONG DOC DUOC FILE");
+            System.out.println("KHONG DOC DUOC FILE"+level+".txt | now ="+LocalTime.now());
         }
         blockName = sc.next();
         for (int i=0;i<4;i++) {

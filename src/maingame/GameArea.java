@@ -44,6 +44,8 @@ public class GameArea extends JPanel {
     //Lớp quản lý màn chơi theo level
     private LevelMatrix levelMatrix;
 
+    private GameOverPanel gameOverPanel;
+    
     //Biến này sẽ lưu vị trí các hàng bị đầy
     //Tối đa ta có 4 hàng nên mảng sẽ có 4 giá trị
     //Nếu có ít hơn 4 hàng thì các giá trị trống để -1
@@ -54,7 +56,9 @@ public class GameArea extends JPanel {
 
     //Phương thức khởi tạo
     public GameArea() {
-
+        
+        this.setLayout(null);
+        
         this.setBackground(Color.black);
 
         //Lấy kích thước của ô vuông
@@ -76,6 +80,15 @@ public class GameArea extends JPanel {
         clearLinesEffect = new ClearLinesEffect(blockCellsSize);
         fullLinesList = new int[4];
         fullLinesList[0] = fullLinesList[1] = fullLinesList[2] = fullLinesList[3] = -1;
+        
+        this.gameOverPanel = new GameOverPanel() {
+            @Override
+            public void onClose() {
+                gameThread.interrupt();
+            }
+        };
+        this.add(gameOverPanel);
+        gameOverPanel.setVisible(false);
     }
 
     //Thay đổi kích thước màn hình game khi cửa sổ chương trình thay đổi kích thước
@@ -116,7 +129,18 @@ public class GameArea extends JPanel {
         levelMatrix = new LevelMatrix(gameLevel);
         
     }
-
+    
+    public int getGameLevel() {
+        return gameLevel;
+    }
+    
+    //Hiển thị gameOver
+    public void showGameOverPanel(int score) {
+        gameOverPanel.setBounds((int)(this.getWidth()*0.05), (int)(this.getHeight()*0.3), (int)(this.getWidth()*0.9), (int)(this.getHeight()*0.25));
+        gameOverPanel.setVisible(true);
+        gameOverPanel.setScore(score);
+    }
+    
     //Thực hiện lưu hoặc swap block
     //Ý tưởng:*********************
     //+Đầu tiên ta cần kiểm tra xem khối đã được swap lần nào hay chưa,
@@ -127,6 +151,8 @@ public class GameArea extends JPanel {
     //nếu khác null tức đã swap gạch, ta reset viên gạch mới swap đó về vị trí thả gạch
     //*****************************
     public boolean holdOrSwapBlock() {
+        if (gameOver)   return false;
+        
         if (storedBlock.hasSwappedHoldingBlock()) {
             return false;
         }
@@ -161,6 +187,7 @@ public class GameArea extends JPanel {
         levelMatrix.setLevelMatrix(backgroundColorMatrix);
         gameOver = false;
         blockGenerator.newGame();
+        gameOverPanel.setVisible(false);
     }
 
     //Kiểm tra xem có hoàn thành phòng tập chưa
@@ -177,7 +204,7 @@ public class GameArea extends JPanel {
 
     //Di chuyển gạch xuống dưới
     public boolean moveBlockDown() {
-        if (block.moveDown()) {
+        if (!gameOver && block.moveDown()) {
             repaint();  //Sau khi di chuyển xuống thì "vẽ" lại màn hình
             return true;
         }
@@ -188,7 +215,7 @@ public class GameArea extends JPanel {
 
     //Di chuyển gạch sang trái
     public boolean moveBlockLeft() {
-        if (block.moveLeft()) {
+        if (!gameOver && block.moveLeft()) {
             repaint();  //Sau khi di chuyển trái thì "vẽ" lại màn hình
             return true;
         }
@@ -197,7 +224,7 @@ public class GameArea extends JPanel {
 
     //Di chuyển gạch sang phải
     public boolean moveBlockRight() {
-        if (block.moveRight()) {
+        if (!gameOver && block.moveRight()) {
             repaint();  //Sau khi di chuyển phải thì "vẽ" lại màn hình
             return true;
         }
@@ -206,7 +233,7 @@ public class GameArea extends JPanel {
 
     //Thả khối gạch xuống
     public boolean dropBlock() {
-        if (block.drop()) {
+        if (!gameOver && block.drop()) {
             dropBlockEffect.setDrop();  //Hiệu ứng thả gạch
             embedBlockIntoMatrix(); //Cho khối gạch vào ma trận nền
             repaint(); 
@@ -222,7 +249,7 @@ public class GameArea extends JPanel {
         if (gameThread.checkBlockAlive() == false) {
             return;
         }
-        if (block.rotateClockWise()) {
+        if (!gameOver && block.rotateClockWise()) {
             repaint();
             Tetris.playRotateblockSoundEffect();
         }
@@ -233,7 +260,7 @@ public class GameArea extends JPanel {
         if (gameThread.checkBlockAlive() == false) {
             return;
         }
-        if (block.rotateCounterClockWise()) {
+        if (!gameOver && block.rotateCounterClockWise()) {
             repaint();
             Tetris.playRotateblockSoundEffect();
         }
@@ -244,7 +271,7 @@ public class GameArea extends JPanel {
         if (gameThread.checkBlockAlive() == false) {
             return;
         }
-        if (block.rotate180()) {
+        if (!gameOver && block.rotate180()) {
             repaint();
             Tetris.playRotateblockSoundEffect();
         }
