@@ -124,6 +124,7 @@ public class ScoreAndTimeSystem extends JPanel {
         this.score = 0;
         this.startMinutes = 0;
         this.startSeconds = 0;
+        gameTimer.start();
         repaint();
     }
 
