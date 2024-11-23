@@ -90,5 +90,6 @@ public class SpeedAndLevelSystem extends JPanel {
     public void newGame() {
         this.level = 0;
         this.LinesCleared = 0;
+        repaint();
     }
 }
